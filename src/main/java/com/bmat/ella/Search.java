@@ -32,7 +32,7 @@ public abstract class Search {
 	}
 
 	public JSONArray retrievePage(long pageIndex) throws Exception{		
-		if(this.method.indexOf("retrieve") == -1){
+		if(this.method.indexOf("resolve") == -1){
 			long offset = 0;
 			if(pageIndex !=0)
 				offset = this.RESULTS_PER_PAGE * pageIndex;
@@ -40,7 +40,7 @@ public abstract class Search {
 		}
 		
 		JSONObject response = this.request.execute(this.method, this.collection, this.searchTerms);
-		return (JSONArray)response.get("results");
+		return response != null ? (JSONArray)response.get("results") : new JSONArray();
 		
 	}
 	
@@ -52,11 +52,9 @@ public abstract class Search {
 		
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public abstract ArrayList getPage() throws Exception;
 	
 	@SuppressWarnings("rawtypes")
-	public abstract ArrayList getPage(long pageIndex) throws Exception;
+	public abstract ArrayList getPage(Long pageIndex) throws Exception;
 	
 	
 	
