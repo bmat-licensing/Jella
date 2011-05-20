@@ -4,38 +4,49 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Authenticator;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+
 public class Request {
 	
-	private String ellaws;
+	private EllaConnection ellaConnection;
+	JSONParser jsonParser;
 	
-	public Request(String ellaws, String username, String password){
-		this.ellaws = fixHostname(ellaws);
-		Authenticator.setDefault(new EllaAuthenticator(username, password));
+	public Request(EllaConnection ellaConnection){
+		this.ellaConnection = ellaConnection;
+		this.jsonParser = new JSONParser();
 	}
 	
-	private String fixHostname(String hostname){
-		if(!hostname.startsWith("http://")){
-			hostname = "http://" + hostname;
-		}
-		if(!hostname.endsWith("/")){
-			hostname += "/";
-		}
-		return hostname;
-	}
 	
-	public void execute(String method, String collection, HashMap<String, String> searchTerms){
-		try {
-			this.downloadResponse(method, collection, searchTerms);
-		} catch (IOException e) {
-			//get errors
+	
+	public JSONObject execute(String method, String collection, HashMap<String, String> searchTerms)throws ServiceException, IOException{
+		try{
+			JSONObject jsonObj = (JSONObject) this.jsonParser.parse(this.downloadResponse(method, collection, searchTerms));
+			Object response = jsonObj.get("response");
+			
+			if(response != null){
+				return (JSONObject) response;
+			}
+			else{
+				JSONObject error = (JSONObject)jsonObj.get("error");
+				throw new ServiceException((String)error.get("type"), (String)error.get("message"));
+			}
 		}
+		catch(IOException e){
+			throw e;
+		}
+		catch(ParseException pe){
+			return null;
+		}
+		
 	}
 	
 	private String downloadResponse(String method, String collection, HashMap<String, String> searchTerms) throws IOException{
@@ -45,19 +56,21 @@ public class Request {
 			params += sep + key + "=" + URLEncoder.encode(searchTerms.get(key), "utf-8"); 
 			sep = "&";
 		}
-		
-		String url = this.ellaws + "collections/" + collection + method + "?" + params;
-		System.out.println("url: " + url);
-		
+		String url = this.ellaConnection.getEllaws() + "collections/" + collection + method + "?" + params;
+		//System.out.println("url: " + url);
 		
 		URLConnection urlCon = new URL(url).openConnection();
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
-		String inputLine, jsonResponse = "";
+		String inputLine, jsonResponse = "";		
 		while((inputLine = bufferedReader.readLine()) != null){
-			System.out.println(inputLine);
 			jsonResponse += inputLine;
 		}
 		bufferedReader.close();
+		//System.out.println("JSON RESPONSE: " + jsonResponse);
 		return jsonResponse;
+	}
+	
+	public EllaConnection getEllaConnection(){
+		return this.ellaConnection;
 	}
 }
