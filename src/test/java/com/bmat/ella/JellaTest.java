@@ -1,9 +1,9 @@
 package com.bmat.ella;
 
 import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.FileReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,12 +17,18 @@ public class JellaTest {
 
 	@Before public void setUp() {
 		try{
-			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("WS Username: ");
-			String username = br.readLine();
-			System.out.print("WS Password: ");
-			String password = br.readLine();
-			jella = new Jella("http://ella.bmat.ws/", username, password);
+			
+			URL url = this.getClass().getResource("/ws.conf.example");
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(url.getFile()));
+			String line;
+			HashMap<String, String> params = new HashMap<String, String>();
+			
+			while((line = bufferedReader.readLine()) != null){
+				String[] param = line.split("=");
+				params.put(param[0], param[1]);
+			}
+			
+			jella = new Jella(params.get("host"), params.get("user"), params.get("password"));
 		}
 		catch(Exception e){
 			e.printStackTrace();
