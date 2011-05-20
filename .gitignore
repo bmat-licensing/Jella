@@ -1,3 +1,5 @@
 .DS_store
 *.class
 MyTest.java
+src/test/resources/ws.conf.example
+target/

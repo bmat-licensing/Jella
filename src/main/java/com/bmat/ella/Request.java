@@ -26,7 +26,6 @@ public class Request {
 	}
 	
 	
-	
 	public JSONObject execute(String method, String collection, HashMap<String, String> searchTerms)throws ServiceException, IOException{
 		try{
 			JSONObject jsonObj = (JSONObject) this.jsonParser.parse(this.downloadResponse(method, collection, searchTerms));
