@@ -11,23 +11,19 @@ import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public abstract class Search {
+public abstract class Search extends SearchObject {
 	
 	protected Request request;
-	
 	protected final String RESPONSE_TYPE = ".json";
 	private int RESULTS_PER_PAGE = 10;
-	
 	protected String method;
-	protected String collection;
 	protected boolean fuzzy = false;
-	protected String metadata;
-    protected String[] metadataLinks;
     protected HashMap<String, String> searchTerms;
     protected Double threshold;
     
 	
-	public Search(EllaConnection ellaConnection){
+	public Search(EllaConnection ellaConnection, String collection){
+		super(ellaConnection, collection);
 		request = new Request(ellaConnection);
 	}
 

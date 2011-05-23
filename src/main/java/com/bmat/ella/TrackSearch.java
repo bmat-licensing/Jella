@@ -16,7 +16,7 @@ public class TrackSearch extends Search {
 	 * method = search or match
 	 * */
 	public TrackSearch(EllaConnection ellaConnection, String method, String query, String collection, boolean fuzzy, Double threshold, String[] filter){
-		super(ellaConnection);
+		super(ellaConnection, collection);
 		this.fuzzy = false;
 		this.threshold = threshold != null ? threshold : 0.0;
 	    this.searchTerms = new HashMap<String, String>();
@@ -50,7 +50,7 @@ public class TrackSearch extends Search {
 	 * method = resolve 
 	 * */
 	public TrackSearch(EllaConnection ellaConnection, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter){
-		super(ellaConnection);
+		super(ellaConnection, collection);
 		this.initialize("/tracks/resolve", collection);
 		this.fuzzy = false;
 		this.threshold = threshold != null ? threshold : 0.0;

@@ -16,16 +16,14 @@ public class Track extends BaseObject{
     private String label;
     private String tags;
     private String tracks;
-    private String metadata;
-    private String[] metaLinks;
 	
 	
 	public Track(EllaConnection ellaConnection, String id, String collection){
 		super(ellaConnection, id, collection);
 		this.method = "/release/" + this.id + ".json";
-		this.metaLinks = new String[]{"spotify_release_url","amazon_release_url","itms_release_url","rhapsody_release_url","emusic_release_url","limewire_release_url","trackitdown_release_url","juno_release_url","rateyourmusic_release_url","metacritic_release_url","pitchfork_release_url","bbc_co_uk_release_url","rollingstone_release_url","cloudspeakers_url"};
+		this.metadataLinks = new String[]{"spotify_release_url","amazon_release_url","itms_release_url","rhapsody_release_url","emusic_release_url","limewire_release_url","trackitdown_release_url","juno_release_url","rateyourmusic_release_url","metacritic_release_url","pitchfork_release_url","bbc_co_uk_release_url","rollingstone_release_url","cloudspeakers_url"};
 		this.metadata = "release,name,artist_service_id,release_small_image,release_label,musicbrainz_release_id";
-		this.metadata += Util.joinArray(this.metaLinks, ",");
+		this.metadata += Util.joinArray(this.metadataLinks, ",");
 	}
 
 	
@@ -145,25 +143,5 @@ public class Track extends BaseObject{
 
 	public void setTracks(String tracks) {
 		this.tracks = tracks;
-	}
-
-
-	public String getMetadata() {
-		return metadata;
-	}
-
-
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
-	}
-
-
-	public String[] getMetaLinks() {
-		return metaLinks;
-	}
-
-
-	public void setMetaLinks(String[] metaLinks) {
-		this.metaLinks = metaLinks;
 	}
 }

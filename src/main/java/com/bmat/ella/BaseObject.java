@@ -1,22 +1,17 @@
 package com.bmat.ella;
 
-public abstract class BaseObject {
-	protected EllaConnection ellaConnection;
+public abstract class BaseObject extends SearchObject{
+	
 	protected String id;
-	protected String collection;
 	protected boolean recommend;
 	protected double popularity;
 	
+	
 	public BaseObject(EllaConnection ellaConnection, String id, String collection){
-		this.ellaConnection = ellaConnection;
+		super(ellaConnection, collection);
 		this.id = id;
-		this.collection = collection;
 	}
 
-	public EllaConnection getEllaConnection() {
-		return ellaConnection;
-	}
-	
 	public String getId() {
 		return id;
 	}
@@ -24,15 +19,6 @@ public abstract class BaseObject {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public String getCollection() {
-		return collection;
-	}
-
-	public void setCollection(String collection) {
-		this.collection = collection;
-	}
-
 
 	public boolean isRecommend() {
 		return recommend;
@@ -45,10 +31,6 @@ public abstract class BaseObject {
 			this.recommend = true;
 	}
 
-	public void setEllaConnection(EllaConnection ellaConnection) {
-		this.ellaConnection = ellaConnection;
-	}
-
 	public double getPopularity() {
 		return popularity;
 	}
@@ -56,4 +38,5 @@ public abstract class BaseObject {
 	public void setPopularity(double popularity) {
 		this.popularity = popularity;
 	}
+
 }
