@@ -6,13 +6,8 @@ import java.util.HashMap;
 import java.io.*;
 
 public class Jella {
-	private static String ellaws = "http://ella.bmat.ws"; // DEFAULT URL to web server access
+  private String ellaws;
 	private EllaConnection ellaConnection;
-
-	
-	public Jella(String username, String password){
-		this.ellaConnection = new EllaConnection(this.ellaws, username, password);
-	}
 	
 	public Jella(String ellaws, String username, String password){
 		this.ellaws = ellaws;
