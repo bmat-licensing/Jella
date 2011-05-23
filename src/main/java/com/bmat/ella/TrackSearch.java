@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+
 public class TrackSearch extends Search {
 
 	/**
@@ -70,8 +71,8 @@ public class TrackSearch extends Search {
 	private void initialize(String method, String collection){
 		this.method = method + this.RESPONSE_TYPE;
 		this.collection = collection;
-		this.metadata = "track,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,musicbrainz_track_id,spotify_track_uri,";
 	    this.metadataLinks = new String[]{"spotify_track_url", "grooveshark_track_url", "amazon_track_url","musicbrainz_track_url","hypem_track_url"};
+	    this.metadata = "track,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,musicbrainz_track_id,spotify_track_uri," + Util.joinArray(this.metadataLinks, ",");
 	}
 	
 	public ArrayList<Track> getPage(Long pageIndex) throws Exception{
@@ -132,19 +133,23 @@ public class TrackSearch extends Search {
 			double trackPopularity = tpop != null && !tpop.toString().equals("") ? new Double(tpop.toString()) : 0.0;
 			artist.setPopularity(trackPopularity);
 			
+			
+			
+			
 			for(String link : this.metadataLinks){
-				track.setLink(link, (String)jsonMetadata.get(link));
+				Object linkObject = jsonMetadata.get(link);
+				if(linkObject instanceof String)
+					track.setLinks(link, (String)jsonMetadata.get(link));
+				else if(linkObject !=null)
+					track.setLinks(link, (JSONArray) jsonMetadata.get(link));
 			}
 			Object trackSmallImages = jsonMetadata.get("track_small_image");
-			if(trackSmallImages != null){
-				if(trackSmallImages instanceof String){
-					track.setImages(trackSmallImages.toString());
-				}
-				else{
-					track.setImages((JSONArray)trackSmallImages);
-				}
-				
-			}				
+			if(trackSmallImages instanceof String)
+				track.setImages((String)trackSmallImages);
+			else if(trackSmallImages != null)
+				track.setImages((JSONArray)trackSmallImages);
+
+
 			
 			
 			Object albumId = jsonEntity.get("release_service_id");

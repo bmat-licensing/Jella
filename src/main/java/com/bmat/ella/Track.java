@@ -1,6 +1,7 @@
 package com.bmat.ella;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 
@@ -12,7 +13,7 @@ public class Track extends BaseObject{
 	private String method;
 	private ArrayList<String> images;
     private String mbid;
-    private ArrayList<String[]> links;
+    private HashMap<String, String[]> links;
     private String label;
     private String tags;
     private String tracks;
@@ -96,9 +97,9 @@ public class Track extends BaseObject{
 		this.mbid = mbid;
 	}
 
-	public ArrayList<String[]> getLinks() {
+	public HashMap<String, String[]> getLinks() {
     	if(this.links == null){
-    		this.links = new ArrayList<String[]>();
+    		this.links = new HashMap<String, String[]>();
     		try{
     			//TO-DO checkout pyella
     		}
@@ -109,12 +110,20 @@ public class Track extends BaseObject{
 		return links;
 	}
 
-	public void setLink(String service, String link) {
+	public void setLinks(String service, JSONArray links) {
 		if(this.links == null)
-			this.links = new ArrayList<String[]>();
-		this.links.add(new String[]{service, link});
+			this.links = new HashMap<String, String[]>();
+		String[] serviceLinks = new String[links.size()]; 
+		for(int i =0; i<serviceLinks.length; i++)
+			serviceLinks[i] = links.get(i).toString();
+		this.links.put(service, serviceLinks);
 	}
 
+	public void setLinks(String service, String link) {
+		if(this.links == null)
+			this.links = new HashMap<String, String[]>();
+		this.links.put(service, new String[]{link});
+	}
 
 	public String getLabel() {
 		return label;
