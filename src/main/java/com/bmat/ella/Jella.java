@@ -1,12 +1,10 @@
 package com.bmat.ella;
 
-import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.io.*;
 
 public class Jella {
-	private static String ellaws = "http://ella.bmat.ws"; // DEFAULT URL to web server access
+	private String ellaws = "http://ella.bmat.ws"; // DEFAULT URL to web server access
 	private EllaConnection ellaConnection;
 
 	
