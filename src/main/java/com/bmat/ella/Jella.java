@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Jella {
-	private String ellaws = "http://ella.bmat.ws"; // DEFAULT URL to web server access
-	private EllaConnection ellaConnection;
 
-	
-	public Jella(String username, String password){
-		this.ellaConnection = new EllaConnection(this.ellaws, username, password);
-	}
+  private String ellaws;
+
+	private EllaConnection ellaConnection;
 	
 	public Jella(String ellaws, String username, String password){
 		this.ellaws = ellaws;

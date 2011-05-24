@@ -1,8 +1,9 @@
 package com.bmat.ella;
 
 import static org.junit.Assert.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,25 +16,13 @@ public class JellaTest {
 
 	private Jella jella;
 
-	@Before public void setUp() {
-		try{
-			
-			URL url = this.getClass().getResource("/ws.conf.example");
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(url.getFile()));
-			String line;
-			HashMap<String, String> params = new HashMap<String, String>();
-			
-			while((line = bufferedReader.readLine()) != null){
-				String[] param = line.split("=");
-				params.put(param[0], param[1]);
-			}
-			
-			jella = new Jella(params.get("host"), params.get("user"), params.get("password"));
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-	  
+	@Before public void setUp() throws IOException {
+    Properties params = new Properties();
+    InputStream inputStream = this.getClass().getResourceAsStream("/ws.conf");
+    assertNotNull("could not load test configuration ('ws.conf')", inputStream);
+    params.load(inputStream);
+    
+    jella = new Jella(params.getProperty("host"), params.getProperty("user"), params.getProperty("password"));
   }
 
   @After public void tearDown() {
