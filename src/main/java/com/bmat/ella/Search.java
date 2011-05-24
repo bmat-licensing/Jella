@@ -46,11 +46,5 @@ public abstract class Search extends SearchObject {
 	
 	
 	@SuppressWarnings("rawtypes")
-	public abstract ArrayList getPage(Long pageIndex) throws Exception;
-	
-	
-	
-//	public abstract void getNextPage();
-//	
-	
+	public abstract ArrayList getPage(Long pageIndex) throws ServiceException, IOException;
 }
