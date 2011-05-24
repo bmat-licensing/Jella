@@ -54,11 +54,10 @@ public class JellaTest {
 	  
 	  // TEST 3 - resolve
 	  String collection3 = "bmat";
-	  String method3 = "resolve";
 	  HashMap<String, String> query = new HashMap<String, String>();
 	  query.put("artist", "Red Hot Chili Peppers");
 	  query.put("track", "Otherside");
-	  ArrayList<Track> tracksResult3 = jella.searchTracks(method3, query, collection3, true, null, new String[]{"track:" + track2}, null);
+	  ArrayList<Track> tracksResult3 = jella.searchTracks(query, collection3, true, null, new String[]{"track:" + track2}, null);
 	  for(Track track : tracksResult3){
 		  assertTrue(track.getTitle().toLowerCase().indexOf(query.get("track").toString().toLowerCase()) != -1);
 		  assertTrue(track.getArtist().getName().toLowerCase().indexOf(query.get("artist").toString().toLowerCase()) != -1);

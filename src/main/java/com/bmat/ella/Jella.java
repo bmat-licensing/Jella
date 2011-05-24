@@ -18,7 +18,8 @@ public class Jella {
 		return new TrackSearch(this.ellaConnection, method, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
 	
-	public ArrayList<Track> searchTracks(String method, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException {
+	/* method = resolve */
+	public ArrayList<Track> searchTracks(HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException {
 		return new TrackSearch(this.ellaConnection, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
 }
