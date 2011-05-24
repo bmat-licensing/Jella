@@ -37,9 +37,6 @@ public class Request {
 				throw new ServiceException((String)error.get("type"), (String)error.get("message"));
 			}
 		}
-		catch(IOException e){
-			throw e;
-		}
 		catch(ParseException pe){
 			return null;
 		}

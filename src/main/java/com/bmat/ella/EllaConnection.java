@@ -7,9 +7,9 @@ public class EllaConnection {
 	
 	public EllaConnection(String ellaws, String username, String password){
 		this.ellaws = fixHostname(ellaws);
-    if (username != null && password != null) {
-      Authenticator.setDefault(new EllaAuthenticator(username, password));
-    }
+		if (username != null && password != null) {
+			Authenticator.setDefault(new EllaAuthenticator(username, password));
+		}
 	}
 	
 	private String fixHostname(String hostname){

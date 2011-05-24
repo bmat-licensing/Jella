@@ -1,5 +1,6 @@
 package com.bmat.ella;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,7 +40,7 @@ public class TrackSearch extends Search {
 			mtd = "match";
 		}
 		
-		this.initialize("/tracks/" + mtd, collection);
+		this.initialize("/tracks/" + mtd);
 		this.searchTerms.put("fetch_metadata", this.metadata);
 	}
 	
@@ -48,7 +49,7 @@ public class TrackSearch extends Search {
 	 * */
 	public TrackSearch(EllaConnection ellaConnection, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter){
 		super(ellaConnection, collection);
-		this.initialize("/tracks/resolve", collection);
+		this.initialize("/tracks/resolve");
 		this.fuzzy = false;
 		this.threshold = threshold != null ? threshold : 0.0;
 		String artist = (String)query.get("artist");
@@ -64,20 +65,22 @@ public class TrackSearch extends Search {
 	    this.searchTerms.put("fetch_metadata", this.metadata);
 	}
 	
-	private void initialize(String method, String collection){
+	private void initialize(String method){
 		this.method = method + this.RESPONSE_TYPE;
-		this.collection = collection;
 	    this.metadataLinks = new String[]{"spotify_track_url", "grooveshark_track_url", "amazon_track_url","musicbrainz_track_url","hypem_track_url"};
 	    this.metadata = "track,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,musicbrainz_track_id,spotify_track_uri," + Util.joinArray(this.metadataLinks, ",");
 	}
 	
-	public ArrayList<Track> getPage(Long pageIndex) throws Exception{
+	public ArrayList<Track> getPage(Long pageIndex) throws ServiceException, IOException {
 		if(pageIndex == null)
 			pageIndex = new Long(0);
 		return this.getResults(this.retrievePage(pageIndex));
 	}
 	
 	private ArrayList<Track> getResults(JSONArray jsonResults){
+		if(jsonResults == null)
+			return null;
+		
 		ArrayList<Track> results = new ArrayList<Track>();
 		for(Object json : jsonResults){
 			JSONObject jsonTrack = (JSONObject) json;
@@ -113,8 +116,7 @@ public class TrackSearch extends Search {
 			
 			String artistLocation = (String) jsonEntity.get("artist_location");
 			artistLocation = artistLocation != null ? artistLocation : "";
-			
-			
+
 			Object recommend = jsonEntity.get("recommendable");
 			artist.setRecommend(recommend);
 		
@@ -129,9 +131,6 @@ public class TrackSearch extends Search {
 			double trackPopularity = tpop != null && !tpop.toString().equals("") ? new Double(tpop.toString()) : 0.0;
 			artist.setPopularity(trackPopularity);
 			
-			
-			
-			
 			for(String link : this.metadataLinks){
 				Object linkObject = jsonMetadata.get(link);
 				if(linkObject instanceof String)
@@ -145,8 +144,6 @@ public class TrackSearch extends Search {
 			else if(trackSmallImages != null)
 				track.setImages((JSONArray)trackSmallImages);
 
-
-			
 			
 			Object albumId = jsonEntity.get("release_service_id");
 			if(albumId != null){

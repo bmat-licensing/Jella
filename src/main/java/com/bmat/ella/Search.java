@@ -1,5 +1,6 @@
 package com.bmat.ella;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,7 +23,7 @@ public abstract class Search extends SearchObject {
 		request = new Request(ellaConnection);
 	}
 
-	public JSONArray retrievePage(long pageIndex) throws Exception{		
+	public JSONArray retrievePage(long pageIndex) throws ServiceException, IOException{		
 		if(this.method.indexOf("resolve") == -1){
 			long offset = 0;
 			if(pageIndex !=0)
@@ -31,7 +32,7 @@ public abstract class Search extends SearchObject {
 		}
 		
 		JSONObject response = this.request.execute(this.method, this.collection, this.searchTerms);
-		return response != null ? (JSONArray)response.get("results") : new JSONArray();
+		return response != null ? (JSONArray)response.get("results") : null;
 		
 	}
 	

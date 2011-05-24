@@ -1,5 +1,6 @@
 package com.bmat.ella;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,11 +15,11 @@ public class Jella {
 		this.ellaConnection = new EllaConnection(this.ellaws, username, password);
 	}
 	
-	public ArrayList<Track> searchTrack(String method, String query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws Exception{
+	public ArrayList<Track> searchTrack(String method, String query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException{
 		return new TrackSearch(ellaConnection, method, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
 	
-	public ArrayList<Track> searchTrack(String method, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws Exception{
+	public ArrayList<Track> searchTrack(String method, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException {
 		return new TrackSearch(ellaConnection, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
 }
