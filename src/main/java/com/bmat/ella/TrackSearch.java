@@ -114,15 +114,12 @@ public class TrackSearch extends Search {
 			double artistPopularity = apop != null && !apop.toString().equals("") ? new Double(apop.toString()) : 0.0;
 			artist.setPopularity(artistPopularity);
 			
-			String artistLocation = (String) jsonEntity.get("artist_location");
-			artistLocation = artistLocation != null ? artistLocation : "";
-
-			Object recommend = jsonEntity.get("recommendable");
+			Object recommend = jsonMetadata.get("recommendable");
 			artist.setRecommend(recommend);
 		
 			Track track = new Track(this.request.getEllaConnection(), trackId, collection);
             track.setTitle((String)jsonMetadata.get("track"));
-            track.setAudio((String)jsonMetadata.get("artist_location"));
+            track.setAudio((String)jsonMetadata.get("location"));
             track.setArtist(artist);
             track.setMbid((String)jsonMetadata.get("musicbrainz_track_id"));
             track.setRecommend(recommend);
