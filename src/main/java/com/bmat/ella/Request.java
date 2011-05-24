@@ -51,7 +51,7 @@ public class Request {
 			sep = "&";
 		}
 		String url = this.ellaConnection.getEllaws() + "collections/" + collection + method + "?" + params;
-		System.out.println("url: " + url);
+		//System.out.println("url: " + url);
 		
 		URLConnection urlCon = new URL(url).openConnection();
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
@@ -60,7 +60,7 @@ public class Request {
 			jsonResponse += inputLine;
 		}
 		bufferedReader.close();
-		System.out.println("JSON RESPONSE: " + jsonResponse);
+		//System.out.println("JSON RESPONSE: " + jsonResponse);
 		return jsonResponse;
 	}
 	

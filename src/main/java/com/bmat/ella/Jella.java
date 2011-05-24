@@ -22,4 +22,8 @@ public class Jella {
 	public ArrayList<Track> searchTracks(HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException {
 		return new TrackSearch(this.ellaConnection, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
+	
+	public ArrayList<Artist> searchArtists(String method, String query, String collection, boolean fuzzy, Double threshold, Long page) throws Exception{
+		return new ArtistSearch(this.ellaConnection, method, query, collection, fuzzy, threshold).getPage(page);
+	}
 }

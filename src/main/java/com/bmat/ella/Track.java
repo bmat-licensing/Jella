@@ -12,8 +12,6 @@ public class Track extends BaseObject{
 	private String audio;
 	private String method;
 	private ArrayList<String> images;
-    private String mbid;
-    private HashMap<String, String[]> links;
     private String label;
     private String tags;
     private String tracks;
@@ -86,69 +84,26 @@ public class Track extends BaseObject{
 		for(int i = 0; i<images.size(); i++)
 			this.setImages(images.get(i).toString());
 	}
-	
-
-	public String getMbid() {
-		return mbid;
-	}
-
-
-	public void setMbid(String mbid) {
-		this.mbid = mbid;
-	}
-
-	public HashMap<String, String[]> getLinks() {
-    	if(this.links == null){
-    		this.links = new HashMap<String, String[]>();
-    		try{
-    			//TO-DO checkout pyella
-    		}
-    		catch(Exception e){
-    			return this.links;
-    		}
-    	}
-		return links;
-	}
-
-	public void setLinks(String service, JSONArray links) {
-		if(this.links == null)
-			this.links = new HashMap<String, String[]>();
-		String[] serviceLinks = new String[links.size()]; 
-		for(int i =0; i<serviceLinks.length; i++)
-			serviceLinks[i] = links.get(i).toString();
-		this.links.put(service, serviceLinks);
-	}
-
-	public void setLinks(String service, String link) {
-		if(this.links == null)
-			this.links = new HashMap<String, String[]>();
-		this.links.put(service, new String[]{link});
-	}
 
 	public String getLabel() {
 		return label;
 	}
 
-
 	public void setLabel(String label) {
 		this.label = label;
 	}
-
-
+	
 	public String getTags() {
 		return tags;
 	}
-
 
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
 
-
 	public String getTracks() {
 		return tracks;
 	}
-
 
 	public void setTracks(String tracks) {
 		this.tracks = tracks;
