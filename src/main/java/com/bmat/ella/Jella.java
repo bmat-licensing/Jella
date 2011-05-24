@@ -6,8 +6,7 @@ import java.util.HashMap;
 
 public class Jella {
 
-  private String ellaws;
-
+	private String ellaws;
 	private EllaConnection ellaConnection;
 	
 	public Jella(String ellaws, String username, String password){
@@ -15,11 +14,11 @@ public class Jella {
 		this.ellaConnection = new EllaConnection(this.ellaws, username, password);
 	}
 	
-	public ArrayList<Track> searchTrack(String method, String query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException{
-		return new TrackSearch(ellaConnection, method, query, collection, fuzzy, threshold, filter).getPage(page);
+	public ArrayList<Track> searchTracks(String method, String query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException{
+		return new TrackSearch(this.ellaConnection, method, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
 	
-	public ArrayList<Track> searchTrack(String method, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException {
-		return new TrackSearch(ellaConnection, query, collection, fuzzy, threshold, filter).getPage(page);
+	public ArrayList<Track> searchTracks(String method, HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter, Long page) throws ServiceException, IOException {
+		return new TrackSearch(this.ellaConnection, query, collection, fuzzy, threshold, filter).getPage(page);
 	}
 }

@@ -35,7 +35,7 @@ public class JellaTest {
 	  String method1 = "search";
 	  String artist1 = "u2";
 	  String album1 = "leave behind";
-	  ArrayList<Track> tracksResult1 = jella.searchTrack(method1, query1, collection1, true, null, new String[]{"artist:" + artist1, "release:" + album1}, null);
+	  ArrayList<Track> tracksResult1 = jella.searchTracks(method1, query1, collection1, true, null, new String[]{"artist:" + artist1, "release:" + album1}, null);
 	  for(Track track : tracksResult1){
 		  assertTrue(track.getArtist().getName().toLowerCase().indexOf(artist1.toLowerCase()) != -1);
 		  assertTrue(track.getTitle().toLowerCase().indexOf(query1.toLowerCase()) != -1);
@@ -46,7 +46,7 @@ public class JellaTest {
 	  String collection2 = "bmat";
 	  String method2 = "match";
 	  String track2 = "Buffalo Soldier";
-	  ArrayList<Track> tracksResult2 = jella.searchTrack(method2, "", collection2, true, null, new String[]{"track:" + track2}, new Long(0));
+	  ArrayList<Track> tracksResult2 = jella.searchTracks(method2, "", collection2, true, null, new String[]{"track:" + track2}, new Long(0));
 	  for(Track track : tracksResult2){
 		  assertTrue(track.getTitle().toLowerCase().indexOf(track2.toLowerCase()) != -1);
 		  assertTrue(track.getCollection().equalsIgnoreCase(collection2));
@@ -58,7 +58,7 @@ public class JellaTest {
 	  HashMap<String, String> query = new HashMap<String, String>();
 	  query.put("artist", "Red Hot Chili Peppers");
 	  query.put("track", "Otherside");
-	  ArrayList<Track> tracksResult3 = jella.searchTrack(method3, query, collection3, true, null, new String[]{"track:" + track2}, null);
+	  ArrayList<Track> tracksResult3 = jella.searchTracks(method3, query, collection3, true, null, new String[]{"track:" + track2}, null);
 	  for(Track track : tracksResult3){
 		  assertTrue(track.getTitle().toLowerCase().indexOf(query.get("track").toString().toLowerCase()) != -1);
 		  assertTrue(track.getArtist().getName().toLowerCase().indexOf(query.get("artist").toString().toLowerCase()) != -1);
