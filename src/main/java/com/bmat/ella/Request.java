@@ -24,13 +24,13 @@ public class Request {
 	}
 	
 	
-	public JSONObject execute(String method, String collection, HashMap<String, String> searchTerms)throws ServiceException, IOException{
+	public Object execute(String method, String collection, HashMap<String, String> searchTerms)throws ServiceException, IOException{
 		try{
 			JSONObject jsonObj = (JSONObject) this.jsonParser.parse(this.downloadResponse(method, collection, searchTerms));
 			Object response = jsonObj.get("response");
 			
 			if(response != null){
-				return (JSONObject) response;
+				return response;
 			}
 			else{
 				JSONObject error = (JSONObject)jsonObj.get("error");
@@ -50,7 +50,11 @@ public class Request {
 			params += sep + key + "=" + URLEncoder.encode(searchTerms.get(key), "utf-8"); 
 			sep = "&";
 		}
-		String url = this.ellaConnection.getEllaws() + "collections/" + collection + method + "?" + params;
+		String url = this.ellaConnection.getEllaws();
+		if(collection != null){
+			url += "/collections/" + collection;
+		}
+		url += method + "?" + params;
 		//System.out.println("url: " + url);
 		
 		URLConnection urlCon = new URL(url).openConnection();

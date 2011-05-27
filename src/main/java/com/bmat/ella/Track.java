@@ -8,25 +8,30 @@ import org.json.simple.JSONArray;
 public class Track extends BaseObject{
 	private String title;
 	private Artist artist;
+	private String artistId;
+    private String artistName;
 	private Album album;
+	private String albumId;
+    private String albumTitle;
 	private String audio;
-	private String method;
 	private ArrayList<String> images;
-    private String label;
+	private Double popularity;
     private String tags;
-    private String tracks;
-	
-	
+
+    
 	public Track(EllaConnection ellaConnection, String id, String collection){
 		super(ellaConnection, id, collection);
-		this.method = "/release/" + this.id + ".json";
-		this.metadataLinks = new String[]{"spotify_release_url","amazon_release_url","itms_release_url","rhapsody_release_url","emusic_release_url","limewire_release_url","trackitdown_release_url","juno_release_url","rateyourmusic_release_url","metacritic_release_url","pitchfork_release_url","bbc_co_uk_release_url","rollingstone_release_url","cloudspeakers_url"};
-		this.metadata = "release,name,artist_service_id,release_small_image,release_label,musicbrainz_release_id";
+		this.method = "/tracks/" + this.id + ".json";
+		this.metadataLinks = new String[]{"spotify_track_url", "grooveshark_track_url", "amazon_track_url","itms_track_url","hypem_track_url","musicbrainz_track_url"};
+		this.metadata = "track,name,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,spotify_track_uri,";
 		this.metadata += Util.joinArray(this.metadataLinks, ",");
 	}
 
 	
 	public String getTitle(){
+		if(this.title == null)
+			this.title = this.getFieldValue("name");
+		this.title = this.title.equals("") ? this.getFieldValue("track") : this.title;
 		return title;
 	}
 
@@ -35,21 +40,81 @@ public class Track extends BaseObject{
 	}
 	
 	public Artist getArtist() {
-		return artist;
+		if(this.artist == null){
+			String metaid = this.getFieldValue("artist_service_id");
+			if(!metaid.equals("")){
+				this.artistId = metaid;
+				this.artist = new Artist(this.request.getEllaConnection(), this.artistId, this.collection);
+			}
+		}
+		return this.artist;
 	}
 
 	public void setArtist(Artist artist) {
 		this.artist = artist;
 	}
 
+	public String getArtistId() {
+		if(this.artistId == null){
+			String metaid = this.getFieldValue("artist_service_id");
+			if(!metaid.equals(""))
+				this.artistId = metaid;
+		}
+		return this.artistId;
+	}
+	
+	public void setArtistId(String artistId) {
+		this.artistId = artistId;
+	}
+
+	public String getArtistName() {
+		if(this.artistName == null)
+			this.artistName = this.getFieldValue("artist");
+		return this.artistName;
+	}
+
+	public void setArtistName(String artistName) {
+		this.artistName = artistName;
+	}
+
 	public Album getAlbum(){
-		return album;
+		if(album == null){
+			String metaid = this.getFieldValue("release_service_id");
+			if(metaid != null){
+				this.albumId = metaid;
+				this.album = new Album(this.request.getEllaConnection(), this.albumId, this.collection);
+			}
+		}
+		return this.album;
 	}
 	
 	public void setAlbum(Album album){
 		this.album = album;
 	}
+	
+	public String getAlbum_id() {
+		if(this.albumId == null)
+			this.albumId = this.getFieldValue("release_service_id");
+		return this.albumId;
+	}
+
+	public void setAlbumId(String albumId) {
+		this.albumId = albumId;
+	}
+
+	public String getAlbumTitle() {
+		if(this.albumTitle == null)
+			this.albumTitle = this.getFieldValue("release");
+		return this.albumTitle;
+	}
+
+	public void setAlbumTitle(String albumTitle) {
+		this.albumTitle = albumTitle;
+	}
+
 	public String getAudio() {
+		if(this.audio == null)
+			this.audio = this.getFieldValue("location");
 		return audio;
 	}
 
@@ -59,17 +124,12 @@ public class Track extends BaseObject{
 	}
 
 
-	public String getMethod() {
-		return method;
-	}
-
-
-	public void setMethod(String method) {
-		this.method = method;
-	}
-
-
 	public ArrayList<String> getImages() {
+		if(this.images == null){
+			JSONArray meta = this.getFieldValues("track_small_image");
+			if(meta != null)
+				this.setImages(meta);
+		}
 		return images;
 	}
 
@@ -84,15 +144,28 @@ public class Track extends BaseObject{
 		for(int i = 0; i<images.size(); i++)
 			this.setImages(images.get(i).toString());
 	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
+	
+	public String getMbid(){
+		if(this.mbid == null)
+			this.setMbid(this.getFieldValue("musicbrainz_track_id"));
+		return this.mbid;
 	}
 	
+	public double getPopularity(){
+		if(this.popularity == null){
+			String meta = this.getFieldValue("track_popularity");
+			if(meta != null)
+				this.popularity = new Double(meta);
+			else
+				this.popularity = new Double(0);
+		}
+		return this.popularity;
+	}
+	
+	public void setPopularity(double popularity) {
+		this.popularity = popularity;
+	}
+
 	public String getTags() {
 		return tags;
 	}
@@ -101,11 +174,5 @@ public class Track extends BaseObject{
 		this.tags = tags;
 	}
 
-	public String getTracks() {
-		return tracks;
-	}
-
-	public void setTracks(String tracks) {
-		this.tracks = tracks;
-	}
+	
 }

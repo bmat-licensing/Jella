@@ -39,7 +39,6 @@ public class TrackSearch extends Search {
 			this.searchTerms.put("fuzzy", "true");
 			mtd = "match";
 		}
-		
 		this.initialize("/tracks/" + mtd);
 		this.searchTerms.put("fetch_metadata", this.metadata);
 	}
@@ -71,11 +70,14 @@ public class TrackSearch extends Search {
 	    this.metadata = "track,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,musicbrainz_track_id,spotify_track_uri," + Util.joinArray(this.metadataLinks, ",");
 	}
 	
-	public ArrayList<Track> getPage(Long pageIndex) throws ServiceException, IOException {
-		if(pageIndex == null)
-			pageIndex = new Long(0);
+	public ArrayList<Track> getPage(long pageIndex) throws ServiceException, IOException {
+		pageIndex = pageIndex > 0 ? pageIndex - 1 : 0;
 		return this.getResults(this.retrievePage(pageIndex));
 	}
+	
+	public ArrayList<Track> getNextPage() throws ServiceException, IOException {
+		return this.getResults(this.retrieveNextPage());
+	} 
 	
 	private ArrayList<Track> getResults(JSONArray jsonResults){
 		if(jsonResults == null)
@@ -121,6 +123,8 @@ public class TrackSearch extends Search {
             track.setTitle((String)jsonMetadata.get("track"));
             track.setAudio((String)jsonMetadata.get("location"));
             track.setArtist(artist);
+            track.setArtistName(artist.getName());
+            track.setArtistId(artist.getId());
             track.setMbid((String)jsonMetadata.get("musicbrainz_track_id"));
             track.setRecommend(recommend);
             
@@ -135,6 +139,7 @@ public class TrackSearch extends Search {
 				else if(linkObject !=null)
 					track.setLinks(link, (JSONArray) jsonMetadata.get(link));
 			}
+			
 			Object trackSmallImages = jsonMetadata.get("track_small_image");
 			if(trackSmallImages instanceof String)
 				track.setImages((String)trackSmallImages);
@@ -150,6 +155,8 @@ public class TrackSearch extends Search {
 				album.setImage((String) jsonMetadata.get("release_small_image"));
 				
 				track.setAlbum(album);
+				track.setAlbumTitle(album.getTitle());
+				track.setAlbumId(album.getId());
 			}
 			results.add(track);
 		}
