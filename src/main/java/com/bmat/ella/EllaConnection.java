@@ -16,8 +16,8 @@ public class EllaConnection {
 		if(!hostname.startsWith("http://")){
 			hostname = "http://" + hostname;
 		}
-		if(!hostname.endsWith("/")){
-			hostname += "/";
+		if(hostname.endsWith("/")){
+			hostname += hostname.substring(0, hostname.length()-1);
 		}
 		return hostname;
 	}
