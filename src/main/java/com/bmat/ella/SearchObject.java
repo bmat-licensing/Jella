@@ -1,23 +1,20 @@
 package com.bmat.ella;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+
 public abstract class SearchObject {
-	protected EllaConnection ellaConnection;
+	protected Request request;
+	protected String method;
 	protected String collection;
 	protected String metadata;
     protected String[] metadataLinks;
     
     public SearchObject(EllaConnection ellaConnection, String collection){
-    	this.ellaConnection = ellaConnection;
+    	this.request = new Request(ellaConnection);
     	this.collection = collection;
     }
-    
-    public EllaConnection getEllaConnection() {
-		return ellaConnection;
-	}
-
-	public void setEllaConnection(EllaConnection ellaConnection) {
-		this.ellaConnection = ellaConnection;
-	}
 
 	public String getCollection() {
 		return collection;
@@ -41,5 +38,17 @@ public abstract class SearchObject {
 
 	public void setMetadataLinks(String[] metadataLinks) {
 		this.metadataLinks = metadataLinks;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+	
+	public Object request(HashMap<String, String> params) throws ServiceException, IOException{
+		return this.request.execute(this.method, this.collection, params);
 	}
 }

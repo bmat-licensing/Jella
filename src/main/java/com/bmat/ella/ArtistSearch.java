@@ -43,11 +43,14 @@ public class ArtistSearch extends Search{
 	}
 	
 	
-	public ArrayList<Artist> getPage(Long pageIndex) throws ServiceException, IOException {
-		if(pageIndex == null)
-			pageIndex = new Long(0);
+	public ArrayList<Artist> getPage(long pageIndex) throws ServiceException, IOException {
+		pageIndex = pageIndex > 0 ? pageIndex - 1 : 0;
 		return this.getResults(this.retrievePage(pageIndex));
 	}
+	
+	public ArrayList<Artist> getNextPage() throws ServiceException, IOException {
+		return this.getResults(this.retrieveNextPage());
+	} 
 	
 	private ArrayList<Artist> getResults(JSONArray jsonResults){
 		if(jsonResults == null)
