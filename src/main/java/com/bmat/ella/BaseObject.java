@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 public abstract class BaseObject extends SearchObject{
 	
 	protected String id;
-	protected boolean recommend;
+	protected Boolean recommend;
 	
 	protected String mbid;
 	protected HashMap<String, String[]> links;
@@ -27,7 +27,9 @@ public abstract class BaseObject extends SearchObject{
 		this.id = id;
 	}
 
-	public boolean isRecommend() {
+	public Boolean isRecommend() {
+		if(this.recommend == null)
+			this.setRecommend(this.getFieldValue("recommendable"));
 		return recommend;
 	}
 

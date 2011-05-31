@@ -55,7 +55,7 @@ public class Request {
 			url += "/collections/" + collection;
 		}
 		url += method + "?" + params;
-		//System.out.println("url: " + url);
+//		System.out.println("url: " + url);
 		
 		URLConnection urlCon = new URL(url).openConnection();
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));

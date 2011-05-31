@@ -48,7 +48,11 @@ public abstract class SearchObject {
 		this.method = method;
 	}
 	
+	public Object request(String method, HashMap<String, String> params) throws ServiceException, IOException{
+		return this.request.execute(method, this.collection, params);
+	}
+	
 	public Object request(HashMap<String, String> params) throws ServiceException, IOException{
-		return this.request.execute(this.method, this.collection, params);
+		return this.request(this.method, params);
 	}
 }

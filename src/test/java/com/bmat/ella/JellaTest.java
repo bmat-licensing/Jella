@@ -125,4 +125,26 @@ public class JellaTest {
 		assertTrue(artistsResult3.size() > 0);
 		assertTrue(artistsResult3.get(0).getName().toLowerCase().indexOf(query3.toLowerCase()) != -1);
 	}
+	
+	@Test public void  testArtist(){
+		Artist artist = new Artist(jella.getEllaConnection(), "0b7c17b1-02e0-49fa-84b4-af3c08362a19", "bmat");
+		assertTrue(artist.getName().equalsIgnoreCase("The White Stripes"));
+		assertTrue(artist.getLocation().equalsIgnoreCase("Detroit, Michigan, US"));
+		String[] decades = artist.getDecades();
+		assertTrue(decades[0].equals("1997"));
+		assertTrue(decades[1].equals("2011"));
+		assertNotNull(artist.getLatlng());
+		assertNotNull(artist.getLinks());
+	}
+	
+	@Test public void  testSimilarArtists() throws ServiceException, IOException{
+		Artist artist = new Artist(jella.getEllaConnection(), "0b7c17b1-02e0-49fa-84b4-af3c08362a19", "bmat");
+		ArrayList<Object[]> similars = artist.getSimilarArtists();
+		assertTrue(similars.size() > 0);
+		for(Object[] obj : similars){
+			Artist art = (Artist) obj[0];
+			assertTrue(!art.getId().equals(""));
+			assertNotNull(art.getName());
+		}
+	}
 }

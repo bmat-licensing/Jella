@@ -85,7 +85,7 @@ public class ArtistSearch extends Search{
 			if (artist.getName() == null)
 				continue;
 			
-			artist.setMbid((String)jsonMetadata.get("artist"));
+			artist.setMbid((String)jsonMetadata.get("musicbrainz_artist_id"));
 			
 			Object apop = jsonMetadata.get("artist_popularity");
 			double artistPopularity = apop != null && !apop.toString().equals("") ? new Double(apop.toString()) : 0.0;

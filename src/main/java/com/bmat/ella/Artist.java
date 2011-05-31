@@ -1,14 +1,20 @@
 package com.bmat.ella;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class Artist extends BaseObject{
 	private String name;
 	private String location;
+	private Double lat;
+	private Double lng;
 	private ArrayList<HashMap<String, Double>> latlng;
 	private Double popularity;
+	private String[] decades;
+	private ArrayList<Object[]> similarArtists;
 	
 	public Artist(EllaConnection ellaConnection, String id, String collection){
 		super(ellaConnection, id, collection);
@@ -20,9 +26,8 @@ public class Artist extends BaseObject{
 	}
 
 	public String getName() {
-		if(name == null){
+		if(name == null)
 			this.name = this.getFieldValue("name");
-		}
 		return this.name;
 	}
 
@@ -31,6 +36,8 @@ public class Artist extends BaseObject{
 	}
 	
 	public String getLocation() {
+		if(this.location == null)
+			this.location = this.getFieldValue("artist_location");
 		return location;
 	}
 
@@ -39,8 +46,20 @@ public class Artist extends BaseObject{
 	}
 
 	public ArrayList<HashMap<String, Double>> getLatlng() {
-		if(this.latlng == null)
-			this.latlng = new ArrayList<HashMap<String, Double>>();
+		if(this.latlng == null){
+			try{
+				JSONArray latlngValues = this.getFieldValues("artist_latlng");
+				if(latlngValues != null){
+					this.setLatlng(latlngValues);
+				}
+			}
+			catch(ClassCastException e){
+				String latlngValues = this.getFieldValue("artist_latlng");
+				if(latlngValues != null){
+					this.setLatlng(latlngValues);
+				}
+			}
+		}
 		return latlng;
 	}
 
@@ -82,5 +101,83 @@ public class Artist extends BaseObject{
 	public void setPopularity(double popularity) {
 		this.popularity = popularity;
 	}
+	
+	public String[] getDecades(){
+		if(this.decades == null)
+			this.setDecades(this.getFieldValue("artist_decades1"), this.getFieldValue("artist_decades2"));
+		return this.decades;
+	}
+	
+	public void setDecades(String decade1, String decade2){
+		if(this.decades == null)
+			this.decades = new String[2];
+		this.decades[0] = decade1 == null? "" : decade1;
+		this.decades[1] = decade2 == null? "" : decade2;
+	}
+	
+	public ArrayList<Object[]> getSimilarArtists() throws ServiceException, IOException {
+		if(!this.isRecommend())
+			return null;
+		else if(this.similarArtists != null)
+			return this.similarArtists;
+		
+		this.similarArtists = new ArrayList<Object[]>();
+		String mtd = "/artists/" + this.id + "/similar/artists.json";
+		HashMap<String, String> fetchMetadata = new HashMap<String, String>();
+		fetchMetadata.put("fetch_metadata", this.metadata);
+		JSONObject response = (JSONObject)this.request(mtd, fetchMetadata);
+		JSONArray results = (JSONArray) response.get("results");
+		for(Object json : results){
+			JSONObject jsonArtist = (JSONObject) json;
+			JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
+			JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
+			String artistId = (String) jsonEntity.get("id");
+			if(artistId == null || artistId.trim().equals(""))
+				continue;
+			Artist artist = new Artist(this.request.getEllaConnection(), artistId, this.collection);
+			artist.setName((String)jsonMetadata.get("name"));
+			
+			Object apop = jsonMetadata.get("artist_popularity");
+			double artistPopularity = apop != null && !apop.toString().equals("") ? new Double(apop.toString()) : 0.0;
+			artist.setPopularity(artistPopularity);
+			
+			String artistLocation = (String) jsonMetadata.get("artist_location");
+			artistLocation = artistLocation != null ? artistLocation : "";
+			
+			Object recommend = jsonMetadata.get("recommendable");
+			artist.setRecommend(recommend);
+			
+			Object score = jsonArtist.get("score");
+			if(score == null || score.equals(""))
+				score = "0";
+			this.similarArtists.add(new Object[]{artist, new Double(score.toString())});
+		}
+		
+		return this.similarArtists;
+	}
 
+	public Double getLat() {
+		if(this.lat == null){
+			String latValue = this.getFieldValue("artist_lat");
+			this.lat = latValue == null ? null : new Double(latValue);
+		}
+		return this.lat;
+	}
+
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+
+	public Double getLng() {
+		if(this.lng == null){
+			String lngValue = this.getFieldValue("artist_lng");
+			this.lng = lngValue == null ? null : new Double(lngValue);
+		}
+		return this.lng;
+	}
+
+	public void setLng(Double lng) {
+		this.lng = lng;
+	}
+	
 }
