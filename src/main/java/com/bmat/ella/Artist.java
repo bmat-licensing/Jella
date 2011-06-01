@@ -15,6 +15,7 @@ public class Artist extends BaseObject{
 	private Double popularity;
 	private String[] decades;
 	private ArrayList<Object[]> similarArtists;
+	private ArrayList<Track> tracks;
 	
 	public Artist(EllaConnection ellaConnection, String id, String collection){
 		super(ellaConnection, id, collection);
@@ -113,6 +114,72 @@ public class Artist extends BaseObject{
 			this.decades = new String[2];
 		this.decades[0] = decade1 == null? "" : decade1;
 		this.decades[1] = decade2 == null? "" : decade2;
+	}
+	
+	public ArrayList<Track> getTracks() throws ServiceException, IOException{
+		if(this.tracks != null)
+			return this.tracks;
+		
+		this.tracks = new ArrayList<Track>();
+		String mtd = "/artists/" + this.id + "/tracks.json";
+		String trackMetadata = "track,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,musicbrainz_track_id,spotify_track_uri,";
+		String[] trackMetadataLinks = new String[]{"spotify_track_url", "grooveshark_track_url", "amazon_track_url","itms_track_url","hypem_track_url","musicbrainz_track_url"};
+		trackMetadata += Util.joinArray(trackMetadataLinks, ",");
+		
+		HashMap<String, String> fetchMetadata = new HashMap<String, String>();
+		fetchMetadata.put("fetch_metadata", trackMetadata);
+		JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
+		JSONArray results = (JSONArray) response.get("results");
+		for(Object json : results){
+			JSONObject jsonArtist = (JSONObject) json;
+			JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
+			JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
+			String trackId = (String) jsonEntity.get("id");
+			if(trackId == null || trackId.equals(""))
+				continue;
+			Track track = new Track(this.request.getEllaConnection(), trackId, this.collection);
+			
+			track.setTitle((String)jsonMetadata.get("track"));
+            track.setAudio((String)jsonMetadata.get("location"));
+            track.setArtist(this);
+            track.setArtistName(this.getName());
+            track.setArtistId(this.getId());
+            track.setMbid((String)jsonMetadata.get("musicbrainz_track_id"));
+            
+            Object tpop = jsonMetadata.get("track_popularity");
+			double trackPopularity = tpop != null && !tpop.toString().equals("") ? new Double(tpop.toString()) : 0.0;
+			track.setPopularity(trackPopularity);
+			
+			Object recommend = jsonMetadata.get("recommendable");
+			track.setRecommend(recommend);
+			
+			for(String link : trackMetadataLinks){
+				Object linkObject = jsonMetadata.get(link);
+				if(linkObject instanceof String)
+					track.setLinks(link, (String)jsonMetadata.get(link));
+				else if(linkObject !=null)
+					track.setLinks(link, (JSONArray) jsonMetadata.get(link));
+			}
+			
+			Object trackSmallImages = jsonMetadata.get("track_small_image");
+			if(trackSmallImages instanceof String)
+				track.setImages((String)trackSmallImages);
+			else if(trackSmallImages != null)
+				track.setImages((JSONArray)trackSmallImages);
+            
+            Object albumId = jsonMetadata.get("release_service_id");
+			if(albumId != null){
+				Album album = new Album(this.request.getEllaConnection(), (String) albumId, this.collection);
+				album.setTitle((String)jsonMetadata.get("release"));
+				album.setArtist(this);
+				
+				track.setAlbum(album);
+				track.setAlbumTitle(album.getTitle());
+				track.setAlbumId(album.getId());
+			}
+            this.tracks.add(track);
+		}
+		return this.tracks;
 	}
 	
 	public ArrayList<Object[]> getSimilarArtists() throws ServiceException, IOException {

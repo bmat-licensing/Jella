@@ -130,7 +130,7 @@ public class TrackSearch extends Search {
             
             Object tpop = jsonMetadata.get("track_popularity");
 			double trackPopularity = tpop != null && !tpop.toString().equals("") ? new Double(tpop.toString()) : 0.0;
-			artist.setPopularity(trackPopularity);
+			track.setPopularity(trackPopularity);
 			
 			for(String link : this.metadataLinks){
 				Object linkObject = jsonMetadata.get(link);
@@ -147,7 +147,7 @@ public class TrackSearch extends Search {
 				track.setImages((JSONArray)trackSmallImages);
 
 			
-			Object albumId = jsonEntity.get("release_service_id");
+			Object albumId = jsonMetadata.get("release_service_id");
 			if(albumId != null){
 				Album album = new Album(this.request.getEllaConnection(), (String) albumId, collection);
 				album.setTitle((String)jsonMetadata.get("release"));

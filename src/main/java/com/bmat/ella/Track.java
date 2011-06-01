@@ -92,7 +92,7 @@ public class Track extends BaseObject{
 		this.album = album;
 	}
 	
-	public String getAlbum_id() {
+	public String getAlbumId() {
 		if(this.albumId == null)
 			this.albumId = this.getFieldValue("release_service_id");
 		return this.albumId;

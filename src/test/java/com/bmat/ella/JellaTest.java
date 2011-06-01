@@ -147,4 +147,17 @@ public class JellaTest {
 			assertNotNull(art.getName());
 		}
 	}
+	
+	@Test public void  testArtistTracks() throws ServiceException, IOException{
+		Artist artist = new Artist(jella.getEllaConnection(), "0b7c17b1-02e0-49fa-84b4-af3c08362a19", "bmat");
+		for(Track track:artist.getTracks()){
+			assertNotNull(track.getId());
+			assertNotNull(track.getTitle());
+			assertTrue(track.getArtistId().equals(artist.getId()));
+			assertTrue(track.getArtistName().equals(artist.getName()));
+			assertTrue(track.getAlbumId().equals(track.getAlbum().getId()));
+			assertTrue(track.getAlbumTitle().equals(track.getAlbum().getTitle()));
+			assertNotNull(track.getLinks());
+		}
+	}
 }
