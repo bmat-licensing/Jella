@@ -102,6 +102,7 @@ public class JellaTest {
 		artist.put("collection", "bmat");
 		artist.put("entity", "artist");
 		seeds.put("6b90be58-2540-41d8-8bce-17e7e19c2a97", artist);
+		assertTrue(track.getSimilarTracks(30, new String[]{"speed:slow", "mood:blue"}, "bmat", seeds, null, null).size() > 0);
 	}
 	
 	@Test public void testSearchArtists() throws Exception{
