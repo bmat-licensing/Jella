@@ -24,8 +24,8 @@ public class Jella {
 	}
 	
 	/* method = resolve */
-	public TrackSearch searchTracks(HashMap<String, String> query, String collection, boolean fuzzy, Double threshold, String[] filter) throws ServiceException, IOException {
-		return new TrackSearch(this.ellaConnection, query, collection, fuzzy, threshold, filter);
+	public TrackSearch searchTracks(HashMap<String, String> query, String collection, boolean fuzzy, Double threshold) throws ServiceException, IOException {
+		return new TrackSearch(this.ellaConnection, query, collection, fuzzy, threshold);
 	}
 	
 	public ArtistSearch searchArtists(String method, String query, String collection, boolean fuzzy, Double threshold) throws Exception{

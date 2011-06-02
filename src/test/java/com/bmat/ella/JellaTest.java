@@ -66,7 +66,7 @@ public class JellaTest {
 		HashMap<String, String> query = new HashMap<String, String>();
 		query.put("artist", "Red Hot Chili Peppers");
 		query.put("track", "Otherside");
-		TrackSearch trackSearch3 = jella.searchTracks(query, collection3, true, null, new String[]{"track:" + track2});
+		TrackSearch trackSearch3 = jella.searchTracks(query, collection3, true, null);
 		assertTrue(trackSearch3.getTotalResultCount() > 0);
 		ArrayList<Track> tracksResult3 = trackSearch3.getPage(-1);
 		assertTrue(tracksResult3.size() > 0);
@@ -86,6 +86,22 @@ public class JellaTest {
 		assertTrue(track.getAlbumTitle().equalsIgnoreCase("Californication"));
 		assertNotNull(track.getLinks());
 		
+	}
+	
+	@Test public void  testSimilarTracks() throws ServiceException, IOException{
+		Track track = new Track(jella.getEllaConnection(), "9dd6f275-81f4-4b4d-9277-41dfb1dad7a7", "bmat");
+		ArrayList<Track> similars = track.getSimilarTracks();
+		assertTrue(similars.size() > 0);
+		for(Track sim : similars){			
+			assertTrue(!sim.getId().equals(""));
+			assertNotNull(sim.getTitle());
+		}
+		
+		HashMap<String, HashMap<String, String>> seeds = new HashMap<String, HashMap<String, String>>();
+		HashMap<String, String> artist = new HashMap<String, String>();
+		artist.put("collection", "bmat");
+		artist.put("entity", "artist");
+		seeds.put("6b90be58-2540-41d8-8bce-17e7e19c2a97", artist);
 	}
 	
 	@Test public void testSearchArtists() throws Exception{
