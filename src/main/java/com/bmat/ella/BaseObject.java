@@ -55,13 +55,7 @@ public abstract class BaseObject extends SearchObject{
     	if(this.links == null){
     		this.links = new HashMap<String, String[]>();
     		try{
-    			if(this.json == null){
-    				HashMap<String, String> fetchMetadata = new HashMap<String, String>();
-    				fetchMetadata.put("fetch_metadata", this.metadata);
-    				JSONArray response = (JSONArray)this.request(fetchMetadata);
-    					
-    				this.json = (JSONObject) response.get(0);
-    			}
+    			this.obtainJson();
     			JSONObject jsonMetadata = (JSONObject) this.json.get("metadata");
 				for(String link : this.metadataLinks){
 					Object linkObject = jsonMetadata.get(link);

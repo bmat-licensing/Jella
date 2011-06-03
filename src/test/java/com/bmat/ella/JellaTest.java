@@ -167,13 +167,40 @@ public class JellaTest {
 	
 	@Test public void  testArtistTracks() throws ServiceException, IOException{
 		Artist artist = new Artist(jella.getEllaConnection(), "0b7c17b1-02e0-49fa-84b4-af3c08362a19", "bmat");
-		for(Track track:artist.getTracks()){
+		ArrayList<Track> tracks = artist.getTracks();
+		assertTrue(tracks.size() > 0);
+		for(Track track:tracks){
 			assertNotNull(track.getId());
 			assertNotNull(track.getTitle());
 			assertTrue(track.getArtistId().equals(artist.getId()));
 			assertTrue(track.getArtistName().equals(artist.getName()));
 			assertTrue(track.getAlbumId().equals(track.getAlbum().getId()));
 			assertTrue(track.getAlbumTitle().equals(track.getAlbum().getTitle()));
+			assertNotNull(track.getLinks());
+		}
+	}
+	
+	@Test public void  testAlbum(){
+		Album album = new Album(jella.getEllaConnection(), "2eb3b186-121f-4eaf-9ad6-f0f7730b57eb", "bmat");
+		assertNotNull(album.getId());
+		assertNotNull(album.getMbid());
+		assertTrue(album.getTitle().equalsIgnoreCase("Conquest"));
+		assertTrue(album.getArtist().getName().equalsIgnoreCase("the white stripes"));
+		assertNotNull(album.getLinks());
+		assertNotNull(album.getLabels());
+	}
+	
+	@Test public void  testAlbumTrack() throws ServiceException, IOException{
+		Album album = new Album(jella.getEllaConnection(), "2eb3b186-121f-4eaf-9ad6-f0f7730b57eb", "bmat");
+		ArrayList<Track> tracks = album.getTracks();
+		assertTrue(tracks.size() > 0);
+		for(Track track : tracks){
+			assertNotNull(track.getId());
+			assertNotNull(track.getTitle());
+			assertTrue(track.getArtistId().equals(album.getArtist().getId()));
+			assertTrue(track.getArtistName().equals(album.getArtist().getName()));
+			assertTrue(track.getAlbumId().equals(album.getId()));
+			assertTrue(track.getAlbumTitle().equals(album.getTitle()));
 			assertNotNull(track.getLinks());
 		}
 	}
