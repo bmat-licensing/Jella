@@ -12,18 +12,34 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
+/**
+ * Java Class Request.
+ * Represents a web service request.
+ * @author Harrington Joseph (Harph)
+ * */
 public class Request {
 	
 	private EllaConnection ellaConnection;
 	JSONParser jsonParser;
 	
+	/**
+	 * Class constructor.
+	 * @param ellaConnection a connection to the Ella web service. 
+	 * */
 	public Request(EllaConnection ellaConnection){
 		this.ellaConnection = ellaConnection;
 		this.jsonParser = new JSONParser();
 	}
 	
-	
+	/**
+	 * Executes the web service request.
+	 * 
+	 * @param method type of search that will be executed.
+	 * @param collection name of the queried collection.
+	 * @param searchTerms request parameters. 
+	 * 
+	 * @return an Object instance of JSONObject or JSONArray.
+	 * */
 	public Object execute(String method, String collection, HashMap<String, String> searchTerms)throws ServiceException, IOException{
 		try{
 			JSONObject jsonObj = (JSONObject) this.jsonParser.parse(this.downloadResponse(method, collection, searchTerms));
@@ -43,6 +59,15 @@ public class Request {
 		
 	}
 	
+	/**
+	 * Downloads the request response.
+	 * 
+	 * @param method type of search that will be executed.
+	 * @param collection name of the queried collection.
+	 * @param searchTerms request parameters. 
+	 * 
+	 * @return a String that contains the web service response.
+	 * */
 	private String downloadResponse(String method, String collection, HashMap<String, String> searchTerms) throws IOException{
 		String params = "";
 		String sep = "";

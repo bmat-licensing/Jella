@@ -7,6 +7,11 @@ import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * Java Class Track.
+ * Represents a BMAT Track.
+ * @author Harrington Joseph (Harph)
+ * */
 public class Track extends BaseObject{
 	private String title;
 	private Artist artist;
@@ -18,9 +23,14 @@ public class Track extends BaseObject{
 	private String audio;
 	private ArrayList<String> images;
 	private Double popularity;
-    private String tags;
+//    private String tags;
 
-    
+    /**
+	 * Class constructor.
+	 * @param ellaConnection a connection to the Ella web service. 
+	 * @param id the id of the song
+	 * @param collection the collection name of the album.
+	 * */
 	public Track(EllaConnection ellaConnection, String id, String collection){
 		super(ellaConnection, id, collection);
 		this.method = "/tracks/" + this.id + ".json";
@@ -29,22 +39,34 @@ public class Track extends BaseObject{
 		this.metadata += Util.joinArray(this.metadataLinks, ",");
 	}
 
-	
+	/**
+	 * @return a String like "Artist name - Track title".
+	 * */
 	public String getFullTitle(){
         return this.getArtistName() + " - " + this.getTitle();
 	}
 	
+	/**
+	 * @return the title of the track.
+	 * */
 	public String getTitle(){
 		if(this.title == null)
 			this.title = this.getFieldValue("name");
 		this.title = this.title.equals("") ? this.getFieldValue("track") : this.title;
 		return title;
 	}
-
+	
+	/**
+	 * Sets the title of the track.
+	 * @param title the title of the track. 
+	 * */
 	public void setTitle(String title){
 		this.title = title;
 	}
-	
+
+	/**
+	 * @return the associated Artist instance
+	 * */
 	public Artist getArtist() {
 		if(this.artist == null){
 			String metaid = this.getFieldValue("artist_service_id");
@@ -56,10 +78,17 @@ public class Track extends BaseObject{
 		return this.artist;
 	}
 
+	/**
+	 * Sets the Artist of the track.
+	 * @param artist the Artist of the track. 
+	 * */
 	public void setArtist(Artist artist) {
 		this.artist = artist;
 	}
 
+	/**
+	 * @return the artist id of the track.
+	 * */
 	public String getArtistId() {
 		if(this.artistId == null){
 			String metaid = this.getFieldValue("artist_service_id");
@@ -69,20 +98,34 @@ public class Track extends BaseObject{
 		return this.artistId;
 	}
 	
+	/**
+	 * Sets the artist id of the track.
+	 * @param artistId the artist id of the track. 
+	 * */
 	public void setArtistId(String artistId) {
 		this.artistId = artistId;
 	}
 
+	/**
+	 * @return the artist name of the track.
+	 * */
 	public String getArtistName() {
 		if(this.artistName == null)
 			this.artistName = this.getFieldValue("artist");
 		return this.artistName;
 	}
 
+	/**
+	 * Sets the artist name of the track.
+	 * @param artistName the artist name of the track. 
+	 * */
 	public void setArtistName(String artistName) {
 		this.artistName = artistName;
 	}
 
+	/**
+	 * @return the associated Album instance
+	 * */
 	public Album getAlbum(){
 		if(album == null){
 			String metaid = this.getFieldValue("release_service_id");
@@ -94,42 +137,68 @@ public class Track extends BaseObject{
 		return this.album;
 	}
 	
+	/**
+	 * Sets the Album of the track.
+	 * @param album the Album of the track. 
+	 * */
 	public void setAlbum(Album album){
 		this.album = album;
 	}
 	
+	/**
+	 * @return the album id of the track.
+	 * */
 	public String getAlbumId() {
 		if(this.albumId == null)
 			this.albumId = this.getFieldValue("release_service_id");
 		return this.albumId;
 	}
-
+	
+	/**
+	 * Sets the album id of the track.
+	 * @param albumId the album id of the track. 
+	 * */
 	public void setAlbumId(String albumId) {
 		this.albumId = albumId;
 	}
-
+	
+	/**
+	 * @return the album title of the track.
+	 * */
 	public String getAlbumTitle() {
 		if(this.albumTitle == null)
 			this.albumTitle = this.getFieldValue("release");
 		return this.albumTitle;
 	}
 
+	/**
+	 * Sets the album title of the track.
+	 * @param albumTitle the album title of the track. 
+	 * */
 	public void setAlbumTitle(String albumTitle) {
 		this.albumTitle = albumTitle;
 	}
 
+	/**
+	 * @return the audio URL of the track.
+	 * */
 	public String getAudio() {
 		if(this.audio == null)
 			this.audio = this.getFieldValue("location");
 		return audio;
 	}
 
-
+	/**
+	 * Sets the audio URL of the track.
+	 * @param audio the audio URL of the track. 
+	 * */
 	public void setAudio(String audio) {
 		this.audio = audio;
 	}
 
-
+	/**
+	 * @return an ArrayList of String with the images of the track.
+	 * */
 	public ArrayList<String> getImages() {
 		if(this.images == null){
 			JSONArray meta = this.getFieldValues("track_small_image");
@@ -139,24 +208,37 @@ public class Track extends BaseObject{
 		return images;
 	}
 
-
+	/**
+	 * Sets the album title of the track.
+	 * @param albumTitle the album title of the track. 
+	 * */
 	public void setImages(String image) {
 		if(this.images == null)
 			this.images = new ArrayList<String>();
 		this.images.add(image);
 	}
 
+	/**
+	 * Sets the images of the track.
+	 * @param images a JSONArray with the images of the track. 
+	 * */
 	public void setImages(JSONArray images) {
 		for(int i = 0; i<images.size(); i++)
 			this.setImages(images.get(i).toString());
 	}
 	
+	/**
+	 * @return the mbid of the track.
+	 * */
 	public String getMbid(){
 		if(this.mbid == null)
 			this.setMbid(this.getFieldValue("musicbrainz_track_id"));
 		return this.mbid;
 	}
 	
+	/**
+	 * @return the popularity of the track.
+	 * */
 	public double getPopularity(){
 		if(this.popularity == null){
 			String meta = this.getFieldValue("track_popularity");
@@ -168,28 +250,31 @@ public class Track extends BaseObject{
 		return this.popularity;
 	}
 	
+	/**
+	 * Sets the popularity of the track.
+	 * @param popularity the popularity of the track. 
+	 * */
 	public void setPopularity(double popularity) {
 		this.popularity = popularity;
 	}
 
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
-
+	/**
+	 * @return an ArrayList with similar artists.
+	 * */
 	public ArrayList<Track> getSimilarTracks() throws ServiceException, IOException{
-		//limit = 20
-		//filter = null
-		//collectionSim = null
-		//seeds = null
-		//threshold = null
-		//similarityType = null
 		return this.getSimilarTracks(20, null, null, null, null, null);
 	}
 	
+	/**
+	 * Searchs for similar tracks.
+	 * @param limit max number of results
+	 * @param filter search filters
+	 * @param collectionSim name of the collection it will look for similar.
+	 * @param seeds similarities to fulfill
+	 * @param threshold score tolerance
+	 * @param similarityType the name of the similarity strategy to use
+	 * @return an ArrayList with similar tracks.
+	 * */
 	public ArrayList<Track> getSimilarTracks(long limit, String[] filter, String collectionSim, HashMap<String, HashMap<String, String>> seeds, Double threshold, String similarityType) throws ServiceException, IOException{
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("limit", Long.toString(limit));
@@ -213,12 +298,15 @@ public class Track extends BaseObject{
 		if(similarityType != null)
 			params.put("similarity_type", similarityType);
 		
+		if(collectionSim == null)
+			collectionSim = this.collection;
+		
 		String mtd = "/tracks/similar_to.json";
 		
 		if(!this.isRecommend())
 			return null;
 		
-		JSONObject response = (JSONObject)this.request(mtd, params);
+		JSONObject response = (JSONObject)this.request(mtd, collectionSim, params);
 		JSONArray results = (JSONArray) response.get("results");
 		ArrayList<Track> similars = new ArrayList<Track>();
 		for(Object json : results){

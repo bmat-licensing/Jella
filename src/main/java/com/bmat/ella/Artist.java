@@ -6,6 +6,11 @@ import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * Java Class Artist.
+ * Represents a BMAT Artist.
+ * @author Harrington Joseph (Harph)
+ * */
 public class Artist extends BaseObject{
 	private String name;
 	private String location;
@@ -17,35 +22,57 @@ public class Artist extends BaseObject{
 	private ArrayList<Object[]> similarArtists;
 	private ArrayList<Track> tracks;
 	
+	/**
+	 * Class constructor.
+	 * @param ellaConnection a connection to the Ella web service. 
+	 * @param id artist id.
+	 * @param collection the collection name of the album.
+	 * */
 	public Artist(EllaConnection ellaConnection, String id, String collection){
 		super(ellaConnection, id, collection);
 		this.method = "/artists/" + this.id + ".json";
-		
 		this.metadataLinks = new String[]{"official_homepage_artist_url","wikipedia_artist_url","lastfm_artist_url","myspace_artist_url","spotify_artist_url","itms_artist_url","discogs_artist_url"};
 		this.metadata = "artist,name,artist_popularity,artist_location,recommendable,artist_decades1,artist_decades2,artist_latlng,musicbrainz_artist_id,";
 		this.metadata += Util.joinArray(this.metadataLinks, ",");
 	}
 
+	/**
+	 * @return the artist name. 
+	 */
 	public String getName() {
 		if(name == null)
 			this.name = this.getFieldValue("name");
 		return this.name;
 	}
 
+	/**
+	 * Sets the artist name
+	 * @param location the artist name
+	 * */
 	public void setName(String name) {
 		this.name = name;
 	}
 	
+	/**
+	 * @return the artist location. 
+	 */
 	public String getLocation() {
 		if(this.location == null)
 			this.location = this.getFieldValue("artist_location");
 		return location;
 	}
 
+	/**
+	 * Sets the artist location
+	 * @param location the artist location
+	 * */
 	public void setLocation(String location) {
 		this.location = location;
 	}
 
+	/**
+	 * @return an ArrayList of latitudes and longitudes of the artist. 
+	 */
 	public ArrayList<HashMap<String, Double>> getLatlng() {
 		if(this.latlng == null){
 			try{
@@ -63,7 +90,11 @@ public class Artist extends BaseObject{
 		}
 		return latlng;
 	}
-
+	
+	/**
+	 * Adds a set of latitudes and longitudes.
+	 * @param latlngs a String with latitudes and longitudes. 
+	 * */
 	public void setLatlng(String latlng) {
 		if(this.latlng == null)
 			this.latlng = new ArrayList<HashMap<String, Double>>();
@@ -77,17 +108,27 @@ public class Artist extends BaseObject{
 		}
 	}
 	
+	/**
+	 * Sets the artist latitudes and longitudes.
+	 * @param latlngs a JSONArray with latitudes and longitudes. 
+	 * */
 	public void setLatlng(JSONArray latlngs) {
 		for(int i = 0; i<latlngs.size(); i++)
 			this.setLatlng(latlngs.get(i).toString());
 	}
 	
+	/**
+	 * return the artist mbid.
+	 * */
 	public String getMbid(){
 		if(this.mbid == null)
 			this.setMbid(this.getFieldValue("musicbrainz_artist_id"));
 		return this.mbid;
 	}
 	
+	/**
+	 * return the artist popularity.
+	 * */
 	public double getPopularity(){
 		if(this.popularity == null){
 			String meta = this.getFieldValue("artist_popularity");
@@ -99,16 +140,28 @@ public class Artist extends BaseObject{
 		return this.popularity;
 	}
 	
+	/**
+	 * Sets the artist popularity.
+	 * @param popularity the artist popularity. 
+	 * */
 	public void setPopularity(double popularity) {
 		this.popularity = popularity;
 	}
 	
+	/**
+	 * return a Array of Strings with the artist decades.
+	 * */
 	public String[] getDecades(){
 		if(this.decades == null)
 			this.setDecades(this.getFieldValue("artist_decades1"), this.getFieldValue("artist_decades2"));
 		return this.decades;
 	}
 	
+	/**
+	 * Sets the artist decades.
+	 * @param decade1 the first decade.
+	 * @param decade2 the last decade. 
+	 * */
 	public void setDecades(String decade1, String decade2){
 		if(this.decades == null)
 			this.decades = new String[2];
@@ -116,6 +169,9 @@ public class Artist extends BaseObject{
 		this.decades[1] = decade2 == null? "" : decade2;
 	}
 	
+	/**
+	 * @return an ArrayList with the artist tracks.
+	 * */
 	public ArrayList<Track> getTracks() throws ServiceException, IOException{
 		if(this.tracks != null)
 			return this.tracks;
@@ -182,6 +238,9 @@ public class Artist extends BaseObject{
 		return this.tracks;
 	}
 	
+	/**
+	 * @return an ArrayList with similar artists and scores.
+	 * */
 	public ArrayList<Object[]> getSimilarArtists() throws ServiceException, IOException {
 		if(!this.isRecommend())
 			return null;
@@ -223,6 +282,9 @@ public class Artist extends BaseObject{
 		return this.similarArtists;
 	}
 
+	/**
+	 * @return the artist latitude.
+	 * */
 	public Double getLat() {
 		if(this.lat == null){
 			String latValue = this.getFieldValue("artist_lat");
@@ -231,10 +293,17 @@ public class Artist extends BaseObject{
 		return this.lat;
 	}
 
+	/**
+	 * Sets the artist latitude.
+	 * @param lat the artist's latitude. 
+	 * */
 	public void setLat(Double lat) {
 		this.lat = lat;
 	}
 
+	/**
+	 * @return the artist's longitude.
+	 * */
 	public Double getLng() {
 		if(this.lng == null){
 			String lngValue = this.getFieldValue("artist_lng");
@@ -243,6 +312,10 @@ public class Artist extends BaseObject{
 		return this.lng;
 	}
 
+	/**
+	 * Sets the artist longitude.
+	 * @param lng the artist longitude. 
+	 * */
 	public void setLng(Double lng) {
 		this.lng = lng;
 	}
