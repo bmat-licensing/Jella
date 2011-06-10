@@ -1,3 +1,4 @@
+
 package com.bmat.ella;
 
 import java.io.IOException;
@@ -11,313 +12,446 @@ import org.json.simple.JSONObject;
  * Represents a BMAT Artist.
  * @author Harrington Joseph (Harph)
  * */
-public class Artist extends BaseObject{
-	private String name;
-	private String location;
-	private Double lat;
-	private Double lng;
-	private ArrayList<HashMap<String, Double>> latlng;
-	private Double popularity;
-	private String[] decades;
-	private ArrayList<Object[]> similarArtists;
-	private ArrayList<Track> tracks;
-	
-	/**
-	 * Class constructor.
-	 * @param ellaConnection a connection to the Ella web service. 
-	 * @param id artist id.
-	 * @param collection the collection name of the album.
-	 * */
-	public Artist(EllaConnection ellaConnection, String id, String collection){
-		super(ellaConnection, id, collection);
-		this.method = "/artists/" + this.id + ".json";
-		this.metadataLinks = new String[]{"official_homepage_artist_url","wikipedia_artist_url","lastfm_artist_url","myspace_artist_url","spotify_artist_url","itms_artist_url","discogs_artist_url"};
-		this.metadata = "artist,name,artist_popularity,artist_location,recommendable,artist_decades1,artist_decades2,artist_latlng,musicbrainz_artist_id,";
-		this.metadata += Util.joinArray(this.metadataLinks, ",");
-	}
+public class Artist extends BaseObject {
+    /**
+     * Artist name.
+     * */
+    private String name;
+    /**
+     * Artist location.
+     * */
+    private String location;
+    /**
+     * Artist latitude.
+     * */
+    private Double lat;
+    /**
+     * Artist longitude.
+     * */
+    private Double lng;
+    /**
+     * Artist latitudes and longitudes.
+     * */
+    private ArrayList<HashMap<String, Double>> latlng;
+    /**
+     * Artist popularity.
+     * */
+    private Double popularity;
+    /**
+     * Artist decades.
+     * */
+    private String[] decades;
+    /**
+     * Similar artist.
+     * */
+    private ArrayList<Object[]> similarArtists;
+    /**
+     * Artist tracks.
+     * */
+    private ArrayList<Track> tracks;
+    /**
+     * Related tags. Each item is an Objects[2] which contains in the tag
+     * score (Double) in position '0' and tag ID (String) in position '1'.
+     * */
+    private ArrayList<Object[]> tags;
+    /**
+     * Default max number of tag results.
+     * */
+    private final int DEFAULT_TAG_LIMIT = 4;
+    /**
+     * Default tag type.
+     * */
+    private final String DEFAULT_TAG_TYPE = "style";
+    /**
+     * Default tag weight.
+     * */
+    private final double DEFAULT_TAG_WEIGHT = 0.70;
+    
 
-	/**
-	 * @return the artist name. 
-	 */
-	public String getName() {
-		if(name == null)
-			this.name = this.getFieldValue("name");
-		return this.name;
-	}
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id Artist id.
+     * @param collection The collection name of the artist.
+     * */
+    public Artist(final EllaConnection ellaConnection, final String id,
+            final String collection) {
+        super(ellaConnection, id, collection);
+        this.method = "/artists/" + this.id + this.RESPONSE_TYPE;
+        this.metadataLinks = new String[]{"official_homepage_artist_url",
+                "wikipedia_artist_url", "lastfm_artist_url",
+                "myspace_artist_url", "spotify_artist_url", "itms_artist_url",
+                "discogs_artist_url"};
+        this.metadata = "artist,name,artist_popularity,artist_location,"
+            + "recommendable,artist_decades1,artist_decades2,artist_latlng,"
+            + "musicbrainz_artist_id,";
+        this.metadata += Util.joinArray(this.metadataLinks, ",");
+    }
 
-	/**
-	 * Sets the artist name
-	 * @param location the artist name
-	 * */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * @return the artist location. 
-	 */
-	public String getLocation() {
-		if(this.location == null)
-			this.location = this.getFieldValue("artist_location");
-		return location;
-	}
+    /**
+     * @return The artist name.
+     */
+    public final String getName() {
+        if (name == null) {
+            this.name = this.getFieldValue("name");
+        }
+        return this.name;
+    }
 
-	/**
-	 * Sets the artist location
-	 * @param location the artist location
-	 * */
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    /**
+     * Sets the artist name.
+     * @param nameValue The artist name.
+     * */
+    public final void setName(final String nameValue) {
+        this.name = nameValue;
+    }
 
-	/**
-	 * @return an ArrayList of latitudes and longitudes of the artist. 
-	 */
-	public ArrayList<HashMap<String, Double>> getLatlng() {
-		if(this.latlng == null){
-			try{
-				JSONArray latlngValues = this.getFieldValues("artist_latlng");
-				if(latlngValues != null){
-					this.setLatlng(latlngValues);
-				}
-			}
-			catch(ClassCastException e){
-				String latlngValues = this.getFieldValue("artist_latlng");
-				if(latlngValues != null){
-					this.setLatlng(latlngValues);
-				}
-			}
-		}
-		return latlng;
-	}
-	
-	/**
-	 * Adds a set of latitudes and longitudes.
-	 * @param latlngs a String with latitudes and longitudes. 
-	 * */
-	public void setLatlng(String latlng) {
-		if(this.latlng == null)
-			this.latlng = new ArrayList<HashMap<String, Double>>();
-		
-		if(!latlng.equals("")){
-			String[] lat_lng = latlng.split(",");
-			HashMap<String, Double> map = new HashMap<String, Double>();
-			map.put("lat", new Double(lat_lng[0]));
-			map.put("lng", new Double(lat_lng[1]));
-			this.latlng.add(map);
-		}
-	}
-	
-	/**
-	 * Sets the artist latitudes and longitudes.
-	 * @param latlngs a JSONArray with latitudes and longitudes. 
-	 * */
-	public void setLatlng(JSONArray latlngs) {
-		for(int i = 0; i<latlngs.size(); i++)
-			this.setLatlng(latlngs.get(i).toString());
-	}
-	
-	/**
-	 * return the artist mbid.
-	 * */
-	public String getMbid(){
-		if(this.mbid == null)
-			this.setMbid(this.getFieldValue("musicbrainz_artist_id"));
-		return this.mbid;
-	}
-	
-	/**
-	 * return the artist popularity.
-	 * */
-	public double getPopularity(){
-		if(this.popularity == null){
-			String meta = this.getFieldValue("artist_popularity");
-			if(meta != null)
-				this.popularity = new Double(meta);
-			else
-				this.popularity = new Double(0);
-		}
-		return this.popularity;
-	}
-	
-	/**
-	 * Sets the artist popularity.
-	 * @param popularity the artist popularity. 
-	 * */
-	public void setPopularity(double popularity) {
-		this.popularity = popularity;
-	}
-	
-	/**
-	 * return a Array of Strings with the artist decades.
-	 * */
-	public String[] getDecades(){
-		if(this.decades == null)
-			this.setDecades(this.getFieldValue("artist_decades1"), this.getFieldValue("artist_decades2"));
-		return this.decades;
-	}
-	
-	/**
-	 * Sets the artist decades.
-	 * @param decade1 the first decade.
-	 * @param decade2 the last decade. 
-	 * */
-	public void setDecades(String decade1, String decade2){
-		if(this.decades == null)
-			this.decades = new String[2];
-		this.decades[0] = decade1 == null? "" : decade1;
-		this.decades[1] = decade2 == null? "" : decade2;
-	}
-	
-	/**
-	 * @return an ArrayList with the artist tracks.
-	 * */
-	public ArrayList<Track> getTracks() throws ServiceException, IOException{
-		if(this.tracks != null)
-			return this.tracks;
-		
-		this.tracks = new ArrayList<Track>();
-		String mtd = "/artists/" + this.id + "/tracks.json";
-		String trackMetadata = "track,artist_service_id,artist,release_service_id,release,location,year,genre,track_popularity,track_small_image,recommendable,musicbrainz_track_id,spotify_track_uri,";
-		String[] trackMetadataLinks = new String[]{"spotify_track_url", "grooveshark_track_url", "amazon_track_url","itms_track_url","hypem_track_url","musicbrainz_track_url"};
-		trackMetadata += Util.joinArray(trackMetadataLinks, ",");
-		
-		HashMap<String, String> fetchMetadata = new HashMap<String, String>();
-		fetchMetadata.put("fetch_metadata", trackMetadata);
-		JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
-		JSONArray results = (JSONArray) response.get("results");
-		for(Object json : results){
-			JSONObject jsonArtist = (JSONObject) json;
-			JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
-			JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
-			String trackId = (String) jsonEntity.get("id");
-			if(trackId == null || trackId.equals(""))
-				continue;
-			Track track = new Track(this.request.getEllaConnection(), trackId, this.collection);
-			
-			track.setTitle((String)jsonMetadata.get("track"));
-            track.setAudio((String)jsonMetadata.get("location"));
+    /**
+     * @return The artist location.
+     */
+    public final String getLocation() {
+        if (this.location == null) {
+            this.location = this.getFieldValue("artist_location");
+        }
+        return location;
+    }
+
+    /**
+     * Sets the artist location.
+     * @param locationValue The artist location.
+     * */
+    public final  void setLocation(final String locationValue) {
+        this.location = locationValue;
+    }
+
+    /**
+     * @return An ArrayList of latitudes and longitudes of the artist.
+     */
+    public final ArrayList<HashMap<String, Double>> getLatlng() {
+        if (this.latlng == null) {
+            try {
+                JSONArray latlngValues = this.getFieldValues("artist_latlng");
+                if (latlngValues != null) {
+                    this.setLatlng(latlngValues);
+                }
+            } catch (ClassCastException e) {
+                String latlngValues = this.getFieldValue("artist_latlng");
+                if (latlngValues != null) {
+                    this.setLatlng(latlngValues);
+                }
+            }
+        }
+        return latlng;
+    }
+
+    /**
+     * Adds a set of latitudes and longitudes.
+     * @param latlngValue A String with latitudes and longitudes.
+     * */
+    public final void setLatlng(final String latlngValue) {
+        if (this.latlng == null) {
+            this.latlng = new ArrayList<HashMap<String, Double>>();
+        }
+
+        if (!latlngValue.equals("")) {
+            String[] latLngArray = latlngValue.split(",");
+            HashMap<String, Double> map = new HashMap<String, Double>();
+            map.put("lat", new Double(latLngArray[0]));
+            map.put("lng", new Double(latLngArray[1]));
+            this.latlng.add(map);
+        }
+    }
+
+    /**
+     * Sets the artist latitudes and longitudes.
+     * @param latlngsValue A JSONArray with latitudes and longitudes.
+     * */
+    public final void setLatlng(final JSONArray latlngsValue) {
+        for (int i = 0; i < latlngsValue.size(); i++) {
+            this.setLatlng(latlngsValue.get(i).toString());
+        }
+    }
+
+    /**
+     * @return The artist mbid.
+     * */
+    public final String getMbid() {
+        if (this.mbid == null) {
+            this.setMbid(this.getFieldValue("musicbrainz_artist_id"));
+        }
+        return this.mbid;
+    }
+
+    /**
+     * @return The artist popularity.
+     * */
+    public final double getPopularity() {
+        if (this.popularity == null) {
+            String meta = this.getFieldValue("artist_popularity");
+            if (meta != null) {
+                this.popularity = new Double(meta);
+            } else {
+                this.popularity = new Double(0);
+            }
+        }
+        return this.popularity;
+    }
+
+    /**
+     * Sets the artist popularity.
+     * @param popularityValue The artist popularity.
+     * */
+    public final void setPopularity(final double popularityValue) {
+        this.popularity = popularityValue;
+    }
+
+    /**
+     * @return A Array of Strings with the artist decades.
+     * */
+    public final String[] getDecades() {
+        if (this.decades == null) {
+            this.setDecades(this.getFieldValue("artist_decades1"),
+                    this.getFieldValue("artist_decades2"));
+        }
+        return this.decades;
+    }
+
+    /**
+     * Sets the artist decades.
+     * @param decade1Value The first decade.
+     * @param decade2Value The last decade.
+     * */
+    public final void setDecades(final String decade1Value,
+            final String decade2Value) {
+        if (this.decades == null) {
+            this.decades = new String[2];
+        }
+        if (decade1Value != null) {
+            this.decades[0] = decade1Value;
+        }
+        if (decade2Value != null) {
+            this.decades[1] = decade2Value;
+        }
+    }
+
+    /**
+     * @return an ArrayList with the artist tracks.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
+     * */
+    public final ArrayList<Track> getTracks()
+    throws ServiceException, IOException {
+        if (this.tracks != null) {
+            return this.tracks;
+        }
+        this.tracks = new ArrayList<Track>();
+        String mtd = "/artists/" + this.id + "/tracks" + this.RESPONSE_TYPE;
+        String trackMetadata = "track,artist_service_id,artist,"
+            + "release_service_id,release,location,year,genre,"
+            + "track_popularity,track_small_image,recommendable,"
+            + "musicbrainz_track_id,spotify_track_uri,";
+        String[] trackMetadataLinks = new String[]{"spotify_track_url",
+                "grooveshark_track_url", "amazon_track_url", "itms_track_url",
+                "hypem_track_url", "musicbrainz_track_url"};
+        trackMetadata += Util.joinArray(trackMetadataLinks, ",");
+
+        HashMap<String, String> fetchMetadata = new HashMap<String, String>();
+        fetchMetadata.put("fetch_metadata", trackMetadata);
+        JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
+        JSONArray results = (JSONArray) response.get("results");
+        for (Object json : results) {
+            JSONObject jsonArtist = (JSONObject) json;
+            JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
+            JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
+            String trackId = (String) jsonEntity.get("id");
+            if (trackId == null || trackId.equals("")) {
+                continue;
+            }
+            Track track = new Track(this.request.getEllaConnection(), trackId,
+                    this.collection);
+
+            track.setTitle((String) jsonMetadata.get("track"));
+            track.setAudio((String) jsonMetadata.get("location"));
             track.setArtist(this);
             track.setArtistName(this.getName());
             track.setArtistId(this.getId());
-            track.setMbid((String)jsonMetadata.get("musicbrainz_track_id"));
-            
+            track.setMbid((String) jsonMetadata.get("musicbrainz_track_id"));
+
             Object tpop = jsonMetadata.get("track_popularity");
-			double trackPopularity = tpop != null && !tpop.toString().equals("") ? new Double(tpop.toString()) : 0.0;
-			track.setPopularity(trackPopularity);
-			
-			Object recommend = jsonMetadata.get("recommendable");
-			track.setRecommend(recommend);
-			
-			for(String link : trackMetadataLinks){
-				Object linkObject = jsonMetadata.get(link);
-				if(linkObject instanceof String)
-					track.setLinks(link, (String)jsonMetadata.get(link));
-				else if(linkObject !=null)
-					track.setLinks(link, (JSONArray) jsonMetadata.get(link));
-			}
-			
-			Object trackSmallImages = jsonMetadata.get("track_small_image");
-			if(trackSmallImages instanceof String)
-				track.setImages((String)trackSmallImages);
-			else if(trackSmallImages != null)
-				track.setImages((JSONArray)trackSmallImages);
-            
+            double trackPopularity = 0.0;
+            if (tpop != null && !tpop.toString().equals("")) {
+                trackPopularity = new Double(tpop.toString());
+            }
+            track.setPopularity(trackPopularity);
+            Object recommend = jsonMetadata.get("recommendable");
+            track.setRecommend(recommend);
+            for (String link : trackMetadataLinks) {
+                Object linkObject = jsonMetadata.get(link);
+                if (linkObject instanceof String) {
+                    track.setLinks(link, (String) jsonMetadata.get(link));
+                } else if (linkObject != null) {
+                    track.setLinks(link, (JSONArray) jsonMetadata.get(link));
+                }
+            }
+            Object trackSmallImages = jsonMetadata.get("track_small_image");
+            if (trackSmallImages instanceof String) {
+                track.setImages((String) trackSmallImages);
+            } else if (trackSmallImages != null) {
+                track.setImages((JSONArray) trackSmallImages);
+            }
             Object albumId = jsonMetadata.get("release_service_id");
-			if(albumId != null){
-				Album album = new Album(this.request.getEllaConnection(), (String) albumId, this.collection);
-				album.setTitle((String)jsonMetadata.get("release"));
-				album.setArtist(this);
-				
-				track.setAlbum(album);
-				track.setAlbumTitle(album.getTitle());
-				track.setAlbumId(album.getId());
-			}
+            if (albumId != null) {
+                Album album = new Album(this.request.getEllaConnection(),
+                        (String) albumId, this.collection);
+                album.setTitle((String) jsonMetadata.get("release"));
+                album.setArtist(this);
+                track.setAlbum(album);
+                track.setAlbumTitle(album.getTitle());
+                track.setAlbumId(album.getId());
+            }
             this.tracks.add(track);
-		}
-		return this.tracks;
-	}
-	
-	/**
-	 * @return an ArrayList with similar artists and scores.
-	 * */
-	public ArrayList<Object[]> getSimilarArtists() throws ServiceException, IOException {
-		if(!this.isRecommend())
-			return null;
-		else if(this.similarArtists != null)
-			return this.similarArtists;
-		
-		this.similarArtists = new ArrayList<Object[]>();
-		String mtd = "/artists/" + this.id + "/similar/artists.json";
-		HashMap<String, String> fetchMetadata = new HashMap<String, String>();
-		fetchMetadata.put("fetch_metadata", this.metadata);
-		JSONObject response = (JSONObject)this.request(mtd, fetchMetadata);
-		JSONArray results = (JSONArray) response.get("results");
-		for(Object json : results){
-			JSONObject jsonArtist = (JSONObject) json;
-			JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
-			JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
-			String artistId = (String) jsonEntity.get("id");
-			if(artistId == null || artistId.trim().equals(""))
-				continue;
-			Artist artist = new Artist(this.request.getEllaConnection(), artistId, this.collection);
-			artist.setName((String)jsonMetadata.get("name"));
-			
-			Object apop = jsonMetadata.get("artist_popularity");
-			double artistPopularity = apop != null && !apop.toString().equals("") ? new Double(apop.toString()) : 0.0;
-			artist.setPopularity(artistPopularity);
-			
-			String artistLocation = (String) jsonMetadata.get("artist_location");
-			artistLocation = artistLocation != null ? artistLocation : "";
-			
-			Object recommend = jsonMetadata.get("recommendable");
-			artist.setRecommend(recommend);
-			
-			Object score = jsonArtist.get("score");
-			if(score == null || score.equals(""))
-				score = "0";
-			this.similarArtists.add(new Object[]{artist, new Double(score.toString())});
-		}
-		
-		return this.similarArtists;
-	}
+        }
+        return this.tracks;
+    }
 
-	/**
-	 * @return the artist latitude.
-	 * */
-	public Double getLat() {
-		if(this.lat == null){
-			String latValue = this.getFieldValue("artist_lat");
-			this.lat = latValue == null ? null : new Double(latValue);
-		}
-		return this.lat;
-	}
+    /**
+     * @return an ArrayList with similar artists and scores.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
+     * */
+    public final ArrayList<Object[]> getSimilarArtists()
+    throws ServiceException, IOException {
+        if (!this.isRecommend()) {
+            return null;
+        } else if (this.similarArtists != null) {
+            return this.similarArtists;
+        }
+        this.similarArtists = new ArrayList<Object[]>();
+        String mtd = "/artists/" + this.id + "/similar/artists"
+        + this.RESPONSE_TYPE;
+        HashMap<String, String> fetchMetadata = new HashMap<String, String>();
+        fetchMetadata.put("fetch_metadata", this.metadata);
+        JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
+        JSONArray results = (JSONArray) response.get("results");
+        for (Object json : results) {
+            JSONObject jsonArtist = (JSONObject) json;
+            JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
+            JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
+            String artistId = (String) jsonEntity.get("id");
+            if (artistId == null || artistId.trim().equals("")) {
+                continue;
+            }
+            Artist artist = new Artist(this.request.getEllaConnection(),
+                    artistId, this.collection);
+            artist.setName((String) jsonMetadata.get("name"));
 
-	/**
-	 * Sets the artist latitude.
-	 * @param lat the artist's latitude. 
-	 * */
-	public void setLat(Double lat) {
-		this.lat = lat;
-	}
+            Object apop = jsonMetadata.get("artist_popularity");
+            double artistPopularity = 0.0;
+            if (apop != null && !apop.toString().equals("")) {
+                artistPopularity = new Double(apop.toString());
+            }
+            artist.setPopularity(artistPopularity);
+            String artistLocation = (String) jsonMetadata.get(
+                    "artist_location");
+            if (artistLocation != null) {
+                artist.setLocation(artistLocation);
+            } else {
+                artist.setLocation("");
+            }
+            Object recommend = jsonMetadata.get("recommendable");
+            artist.setRecommend(recommend);
+            Object score = jsonArtist.get("score");
+            if (score == null || score.equals("")) {
+                score = "0";
+            }
+            this.similarArtists.add(new Object[]{artist,
+                    new Double(score.toString())});
+        }
+        return this.similarArtists;
+    }
 
-	/**
-	 * @return the artist's longitude.
-	 * */
-	public Double getLng() {
-		if(this.lng == null){
-			String lngValue = this.getFieldValue("artist_lng");
-			this.lng = lngValue == null ? null : new Double(lngValue);
-		}
-		return this.lng;
-	}
+    /**
+     * @return The artist latitude.
+     * */
+    public final Double getLat() {
+        if (this.lat == null) {
+            String latValue = this.getFieldValue("artist_lat");
+            if (latValue != null) {
+                this.lat = new Double(latValue);
+            }
+        }
+        return this.lat;
+    }
 
-	/**
-	 * Sets the artist longitude.
-	 * @param lng the artist longitude. 
-	 * */
-	public void setLng(Double lng) {
-		this.lng = lng;
-	}
-	
+    /**
+     * Sets the artist latitude.
+     * @param latValue The artist's latitude.
+     * */
+    public final void setLat(final Double latValue) {
+        this.lat = latValue;
+    }
+
+    /**
+     * @return The artist's longitude.
+     * */
+    public final Double getLng() {
+        if (this.lng == null) {
+            String lngValue = this.getFieldValue("artist_lng");
+            if (lngValue != null) {
+                this.lng = new Double(lngValue);
+            }
+        }
+        return this.lng;
+    }
+
+    /**
+     * Sets the artist longitude.
+     * @param lngValue The artist longitude.
+     * */
+    public final void setLng(final Double lngValue) {
+        this.lng = lngValue;
+    }
+
+    /**
+     * @returns the tag cloud of the artist using tagType = DEFAULT_TAG_TYPE
+     * tagWeight = DEFAULT_TAG_WEIGHT and limit = DEFAULT_TAG_LIMIT.
+     * @throws IOException 
+     * @throws ServiceException 
+     * */
+    public final ArrayList<Object[]> getTags()
+    throws ServiceException, IOException {
+        return this.getTags(this.DEFAULT_TAG_TYPE, 
+                this.DEFAULT_TAG_WEIGHT, this.DEFAULT_TAG_LIMIT);
+    }
+
+    /**
+     * @param tagType The kind of the tags.
+     * @param tagWeight The lowest tag weight allowed.
+     * @param limit Max number of that tags to find.
+     * @returns the tag cloud of the artist.
+     * @throws IOException 
+     * @throws ServiceException 
+     * */
+    public final ArrayList<Object[]> getTags(final String tagType,
+            final double tagWeight, final int limit)
+            throws ServiceException, IOException {
+        if (!this.isRecommend()) {
+            return null;
+        }
+        if (this.tags == null) {
+            this.tags = new ArrayList<Object[]>();
+            String mtd = "/artists/" + this.id
+            + "/similar/collections/tags/tags" + this.RESPONSE_TYPE;
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("limit", Integer.toString(limit));
+            params.put("filter", "tag_type:" + tagType);
+            JSONObject response = (JSONObject) this.request(mtd, params);
+            JSONArray results = (JSONArray) response.get("results");
+            this.tags = new TagManager().getTags(
+                    this.request.getEllaConnection(), results, tagWeight);
+        }
+        return this.tags;
+    }
 }
