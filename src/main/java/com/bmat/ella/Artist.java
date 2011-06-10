@@ -66,7 +66,7 @@ public class Artist extends BaseObject {
      * Default tag weight.
      * */
     private final double DEFAULT_TAG_WEIGHT = 0.70;
-    
+
 
     /**
      * Class constructor.
@@ -81,7 +81,7 @@ public class Artist extends BaseObject {
         this.metadataLinks = new String[]{"official_homepage_artist_url",
                 "wikipedia_artist_url", "lastfm_artist_url",
                 "myspace_artist_url", "spotify_artist_url", "itms_artist_url",
-                "discogs_artist_url"};
+        "discogs_artist_url"};
         this.metadata = "artist,name,artist_popularity,artist_location,"
             + "recommendable,artist_decades1,artist_decades2,artist_latlng,"
             + "musicbrainz_artist_id,";
@@ -354,7 +354,7 @@ public class Artist extends BaseObject {
             }
             artist.setPopularity(artistPopularity);
             String artistLocation = (String) jsonMetadata.get(
-                    "artist_location");
+            "artist_location");
             if (artistLocation != null) {
                 artist.setLocation(artistLocation);
             } else {
@@ -415,14 +415,15 @@ public class Artist extends BaseObject {
     }
 
     /**
-     * @returns the tag cloud of the artist using tagType = DEFAULT_TAG_TYPE
+     * @return the tag cloud of the artist using tagType = DEFAULT_TAG_TYPE
      * tagWeight = DEFAULT_TAG_WEIGHT and limit = DEFAULT_TAG_LIMIT.
-     * @throws IOException 
-     * @throws ServiceException 
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
      * */
     public final ArrayList<Object[]> getTags()
     throws ServiceException, IOException {
-        return this.getTags(this.DEFAULT_TAG_TYPE, 
+        return this.getTags(this.DEFAULT_TAG_TYPE,
                 this.DEFAULT_TAG_WEIGHT, this.DEFAULT_TAG_LIMIT);
     }
 
@@ -430,9 +431,10 @@ public class Artist extends BaseObject {
      * @param tagType The kind of the tags.
      * @param tagWeight The lowest tag weight allowed.
      * @param limit Max number of that tags to find.
-     * @returns the tag cloud of the artist.
-     * @throws IOException 
-     * @throws ServiceException 
+     * @return the tag cloud of the artist.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
      * */
     public final ArrayList<Object[]> getTags(final String tagType,
             final double tagWeight, final int limit)

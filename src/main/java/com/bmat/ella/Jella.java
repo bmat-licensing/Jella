@@ -1,3 +1,4 @@
+
 package com.bmat.ella;
 
 import java.io.IOException;
@@ -5,30 +6,51 @@ import java.util.HashMap;
 
 public class Jella {
 
-	private EllaConnection ellaConnection;
-	
-	public Jella(String ellaws, String username, String password){
-		this.ellaConnection = new EllaConnection(ellaws, username, password);
-	}
+    private EllaConnection ellaConnection;
 
-	public EllaConnection getEllaConnection() {
-		return ellaConnection;
-	}
+    public Jella(final String ellaws, final String username, final String password) {
+        this.ellaConnection = new EllaConnection(ellaws, username, password);
+    }
 
-	public void setEllaConnection(EllaConnection ellaConnection) {
-		this.ellaConnection = ellaConnection;
-	}
+    public final EllaConnection getEllaConnection() {
+        return ellaConnection;
+    }
 
-	public TrackSearch searchTracks(String method, String query, String collection, boolean fuzzy, Double threshold, String[] filter) throws ServiceException, IOException{
-		return new TrackSearch(this.ellaConnection, method, query, collection, fuzzy, threshold, filter);
-	}
-	
-	/* method = resolve */
-	public TrackSearch searchTracks(HashMap<String, String> query, String collection, boolean fuzzy, Double threshold) throws ServiceException, IOException {
-		return new TrackSearch(this.ellaConnection, query, collection, fuzzy, threshold);
-	}
-	
-	public ArtistSearch searchArtists(String method, String query, String collection, boolean fuzzy, Double threshold) throws Exception{
-		return new ArtistSearch(this.ellaConnection, method, query, collection, fuzzy, threshold);
-	}
+    public void setEllaConnection(EllaConnection ellaConnection) {
+        this.ellaConnection = ellaConnection;
+    }
+
+    public final TrackSearch searchTracks(final String query,
+            final String collection,
+            final boolean fuzzy,
+            final Double threshold,
+            final String[] filter)
+    throws ServiceException, IOException {
+        return new TrackSearch(this.ellaConnection,
+                "search",query, collection, fuzzy, threshold, filter);
+    }
+
+    /* method = resolve */
+    public final TrackSearch searchTracks(final HashMap<String, String> query,
+            final String collection,
+            final boolean fuzzy,
+            final Double threshold) throws ServiceException, IOException {
+        return new TrackSearch(this.ellaConnection, query,
+                collection, fuzzy, threshold);
+    }
+
+    public final ArtistSearch searchArtists(final String query,
+            final String collection,
+            final boolean fuzzy,
+            final Double threshold) throws Exception{
+        return new ArtistSearch(this.ellaConnection, "search", query,
+                collection, fuzzy, threshold);
+    }
+
+    public final TagSearch searchTags(final String query,
+            final String collection,
+            final boolean fuzzy){
+        return new TagSearch(this.ellaConnection, "search", query,
+                collection, fuzzy);
+    }
 }
