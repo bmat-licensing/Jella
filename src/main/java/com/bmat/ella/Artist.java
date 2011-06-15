@@ -260,58 +260,8 @@ public class Artist extends BaseObject {
         fetchMetadata.put("fetch_metadata", trackMetadata);
         JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
         JSONArray results = (JSONArray) response.get("results");
-        for (Object json : results) {
-            JSONObject jsonArtist = (JSONObject) json;
-            JSONObject jsonEntity = (JSONObject) jsonArtist.get("entity");
-            JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
-            String trackId = (String) jsonEntity.get("id");
-            if (trackId == null || trackId.equals("")) {
-                continue;
-            }
-            Track track = new Track(this.request.getEllaConnection(), trackId,
-                    this.collection);
-
-            track.setTitle((String) jsonMetadata.get("track"));
-            track.setAudio((String) jsonMetadata.get("location"));
-            track.setArtist(this);
-            track.setArtistName(this.getName());
-            track.setArtistId(this.getId());
-            track.setMbid((String) jsonMetadata.get("musicbrainz_track_id"));
-
-            Object tpop = jsonMetadata.get("track_popularity");
-            double trackPopularity = 0.0;
-            if (tpop != null && !tpop.toString().equals("")) {
-                trackPopularity = new Double(tpop.toString());
-            }
-            track.setPopularity(trackPopularity);
-            Object recommend = jsonMetadata.get("recommendable");
-            track.setRecommend(recommend);
-            for (String link : trackMetadataLinks) {
-                Object linkObject = jsonMetadata.get(link);
-                if (linkObject instanceof String) {
-                    track.setLinks(link, (String) jsonMetadata.get(link));
-                } else if (linkObject != null) {
-                    track.setLinks(link, (JSONArray) jsonMetadata.get(link));
-                }
-            }
-            Object trackSmallImages = jsonMetadata.get("track_small_image");
-            if (trackSmallImages instanceof String) {
-                track.setImages((String) trackSmallImages);
-            } else if (trackSmallImages != null) {
-                track.setImages((JSONArray) trackSmallImages);
-            }
-            Object albumId = jsonMetadata.get("release_service_id");
-            if (albumId != null) {
-                Album album = new Album(this.request.getEllaConnection(),
-                        (String) albumId, this.collection);
-                album.setTitle((String) jsonMetadata.get("release"));
-                album.setArtist(this);
-                track.setAlbum(album);
-                track.setAlbumTitle(album.getTitle());
-                track.setAlbumId(album.getId());
-            }
-            this.tracks.add(track);
-        }
+        this.tracks = new TrackManager().getTracks(
+                this.request.getEllaConnection(), results, this);
         return this.tracks;
     }
 
