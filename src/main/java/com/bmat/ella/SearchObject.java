@@ -50,7 +50,7 @@ public abstract class SearchObject {
     }
 
     public Object request(String method, String collection, HashMap<String, String> params) throws ServiceException, IOException{
-        return this.request.execute(method, collection, params);
+        return this.request.execute(method, collection, params, true);
     }
 
     public Object request(String method, HashMap<String, String> params) throws ServiceException, IOException{
