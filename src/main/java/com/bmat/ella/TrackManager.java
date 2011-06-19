@@ -85,6 +85,7 @@ public class TrackManager {
             JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
             String trackId = (String) jsonEntity.get("id");
             if (trackId == null || trackId.trim().equals("")) {
+                System.out.println("TRACK ID NULL");
                 continue;
             }
             String entityCollection = (String) jsonEntity.get("collection");
@@ -96,11 +97,13 @@ public class TrackManager {
             }
 
             if (threshold != null && score < threshold) {
+                System.out.println("SCORE < THRESHOLD");
                 break;
             }
 
             String artistId = (String) jsonMetadata.get("artist_service_id");
             if (artistId == null) {
+                System.out.println("ARTIST ID NULL");
                 continue;
             }
             Object recommend = jsonMetadata.get("recommendable");
@@ -114,6 +117,7 @@ public class TrackManager {
                         entityCollection);
                 artist.setName((String) jsonMetadata.get("artist"));
                 if (artist.getName() == null) {
+                    System.out.println("ARTIST NAME NULL");
                     continue;
                 }
                 Object apop = jsonEntity.get("artist_popularity");

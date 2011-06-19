@@ -1,3 +1,4 @@
+
 package com.bmat.ella;
 
 import java.io.IOException;
@@ -6,9 +7,24 @@ import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
+/**
+ * Java Class TagSearch.
+ * Search for Tags.
+ * @author Harrington Joseph (Harph)
+ * */
 public class TagSearch extends Search {
-    public TagSearch(final EllaConnection ellaConnection, final String method, final String query, final String collection, final boolean fuzzy) {
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param method A String that contains the name of the type of search
+     * (search, match).
+     * @param query A string that contains the value of the query.
+     * @param collection The name of the queried collection.
+     * @param fuzzy A Boolean value that indicates if is was a fuzzy search.
+     * */
+    public TagSearch(final EllaConnection ellaConnection,
+            final String method, final String query,
+            final String collection, final boolean fuzzy) {
         super(ellaConnection, collection);
         this.fuzzy = fuzzy;
         this.searchTerms = new HashMap<String, String>();
@@ -16,10 +32,14 @@ public class TagSearch extends Search {
         searchTerms.put("q", query);
         searchTerms.put("fetch_metadata", this.metadata);
         String mtd = "/tags/";
-        if(!this.fuzzy) {
-            mtd += method == null ? "search" : method;
+        if (!this.fuzzy) {
+            if (method == null) {
+                mtd += "search";
+            } else{
+                mtd += method;
+            }
             searchTerms.put("limit", "10");
-        }else {
+        } else {
             mtd += "match";
             searchTerms.put("limit", "30");
             searchTerms.put("fuzzy", "True");
@@ -27,24 +47,48 @@ public class TagSearch extends Search {
         this.method = mtd + this.RESPONSE_TYPE;
     }
 
-    @Override
-    public ArrayList<Tag> getPage(long pageIndex) throws ServiceException, IOException {
-        pageIndex = pageIndex > 0 ? pageIndex - 1 : 0;
-        return this.getResult(this.retrieveNextPage());
+    /**
+     * @param pageIndex page number.
+     * @return An ArrayList of tags that match the search that are on the
+     * pageIndex.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
+     * */
+    public final ArrayList<Tag> getPage(final long pageIndex)
+    throws ServiceException, IOException {
+        long pageNumber;
+        if (pageIndex > 0) {
+            pageNumber = pageIndex - 1;
+        } else {
+            pageNumber = 0;
+        }
+        return this.getResults(this.retrievePage(pageNumber));
     }
 
-    @Override
-    public ArrayList<Tag> getNextPage() throws ServiceException, IOException {
-        return this.getResult(this.retrieveNextPage());
+    /**
+     * @return An ArrayList of tags that match the search that are on the
+     * next page.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
+     * */
+    public final ArrayList<Tag> getNextPage()
+    throws ServiceException, IOException {
+        return this.getResults(this.retrieveNextPage());
     }
 
-    private ArrayList<Tag> getResult(JSONArray jsonResults) {
-        if(jsonResults == null) {
+    /**
+     * @param jsonResults the result node of the response.
+     * @return An ArrayList of the tags contained in the jsonResults.
+     * */
+    private final ArrayList<Tag> getResults(final JSONArray jsonResults) {
+        if (jsonResults == null) {
             return null;
         }
 
         ArrayList<Tag> results = new ArrayList<Tag>();
-        for(Object json : jsonResults) {
+        for (Object json : jsonResults) {
             JSONObject jsonTag = (JSONObject) json;
             JSONObject jsonEntity = (JSONObject) jsonTag.get("entity");
             JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
@@ -54,11 +98,14 @@ public class TagSearch extends Search {
             }
             String collection = (String) jsonEntity.get("collection");
             Object relevance = jsonTag.get("score");
-            double score = relevance != null && !relevance.toString().equals("")? new Double(relevance.toString()) : 0.0;
-            if(this.fuzzy && score < 0.4) {
+            double score = 0.0;
+            if (relevance != null && !relevance.toString().equals("")) {
+                score = new Double(relevance.toString());
+            }
+            if (this.fuzzy && score < 0.4) {
                 continue;
             }
-            if(this.method.indexOf("match") != -1 && score < 0.7) {
+            if (this.method.indexOf("match") != -1 && score < 0.7) {
                 continue;
             }
             Tag tag = new Tag(this.request.getEllaConnection(), tagId, collection);

@@ -31,14 +31,7 @@ public class Tag extends BaseObject {
      * score (Double) in position '0' and tag ID (String) in position '1'.
      * */
     private ArrayList<Object[]> similarTags;
-    /**
-     * Default max number of results.
-     * */
-    private final long DEFAULT_LIMIT = 20;
-    /**
-     * Default collection name.
-     * */
-    private final String DEFAULT_COLLECTION = "bmat";
+    
 
     /**
      * Class constructor.

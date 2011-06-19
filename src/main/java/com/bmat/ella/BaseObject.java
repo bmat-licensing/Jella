@@ -5,39 +5,73 @@ import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
+/**
+ * Java Class BaseObject.
+ * Represents a BMAT object.
+ * @author Harrington Joseph (Harph)
+ * */
 public abstract class BaseObject extends SearchObject {
-
+    /**
+     * Object ID.
+     * */
     protected String id;
+    /**
+     * Object recommend.
+     * */
     protected Boolean recommend;
+    /**
+     * Object mbid.
+     * */
     protected String mbid;
+    /**
+     * Object related links.
+     * */
     protected HashMap<String, String[]> links;
+    /**
+     * Object JSON source.
+     * */
     protected JSONObject json;
+    /**
+     * Default max number of results.
+     * */
+    protected final long DEFAULT_LIMIT = 20;
+    /**
+     * Default collection name.
+     * */
+    protected final String DEFAULT_COLLECTION = "bmat";
 
-    public BaseObject(EllaConnection ellaConnection, String id, String collection) {
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id The id of the song.
+     * @param collection The collection name of the album.
+     * */
+    public BaseObject(final EllaConnection ellaConnection, final String id, final String collection) {
         super(ellaConnection, collection);
         this.id = id;
     }
 
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public final void setId(final String idValue) {
+        this.id = idValue;
     }
 
-    public Boolean isRecommend() {
-        if (this.recommend == null)
+    public final Boolean isRecommend() {
+        if (this.recommend == null) {
             this.setRecommend(this.getFieldValue("recommendable"));
+        }
         return recommend;
     }
 
-    public void setRecommend(Object recommend) {
-        if (recommend != null)
-            this.recommend = new Boolean(recommend.toString().toLowerCase());
-        else
+    public final void setRecommend(final Object recommendValue) {
+        if (recommendValue != null) {
+            this.recommend = new Boolean(recommendValue.toString().toLowerCase());
+        } else {
             this.recommend = true;
+        }
     }
 
     public String getMbid() {
@@ -45,13 +79,14 @@ public abstract class BaseObject extends SearchObject {
     }
 
     public void setMbid(String mbid) {
-        if (mbid != null)
+        if (mbid != null) {
             this.mbid = mbid;
-        else
+        } else {
             this.mbid = "";
+        }
     }
 
-    public HashMap<String, String[]> getLinks() {
+    public final HashMap<String, String[]> getLinks() {
         if (this.links == null) {
             this.links = new HashMap<String, String[]>();
             try {
@@ -59,10 +94,11 @@ public abstract class BaseObject extends SearchObject {
                 JSONObject jsonMetadata = (JSONObject) this.json.get("metadata");
                 for (String link : this.metadataLinks) {
                     Object linkObject = jsonMetadata.get(link);
-                    if (linkObject instanceof String)
+                    if (linkObject instanceof String) {
                         this.setLinks(link, (String)jsonMetadata.get(link).toString());
-                    else if (linkObject !=null)
+                    } else if (linkObject !=null) {
                         this.setLinks(link, (JSONArray) jsonMetadata.get(link));
+                    }
                 }
             } catch(Exception e) {
                 return this.links;
@@ -71,34 +107,37 @@ public abstract class BaseObject extends SearchObject {
         return links;
     }
 
-    public void setLinks(String service, JSONArray links) {
-        if (this.links == null)
+    public final void setLinks(final String service, final JSONArray linksValue) {
+        if (this.links == null) {
             this.links = new HashMap<String, String[]>();
-            String[] serviceLinks = new String[links.size()]; 
-            for (int i = 0; i < serviceLinks.length; i++)
-                serviceLinks[i] = links.get(i).toString();
-            this.links.put(service, serviceLinks);
+        }
+        String[] serviceLinks = new String[linksValue.size()]; 
+        for (int i = 0; i < serviceLinks.length; i++) {
+            serviceLinks[i] = linksValue.get(i).toString();
+        }
+        this.links.put(service, serviceLinks);
     }
 
-    public void setLinks(String service, String link) {
-        if (this.links == null)
+    public final void setLinks(final String service, final String link) {
+        if (this.links == null) {
             this.links = new HashMap<String, String[]>();
-            this.links.put(service, new String[]{link});
+        }
+        this.links.put(service, new String[]{link});
     }
 
-    public JSONObject getJson() {
+    public final JSONObject getJson() {
         return json;
     }
 
-    public void setJson(JSONObject json) {
-        this.json = json;
+    public final void setJson(final JSONObject jsonValue) {
+        this.json = jsonValue;
     }
 
-
-    private void obtainJson() {
+    private final void obtainJson() {
         if (this.json == null) {
             try {
-                HashMap<String, String> fetchMetadata = new HashMap<String, String>();
+                HashMap<String, String> fetchMetadata =
+                    new HashMap<String, String>();
                 fetchMetadata.put("fetch_metadata", this.metadata);
                 JSONArray response = (JSONArray) this.request(fetchMetadata);
                 this.json = (JSONObject) response.get(0);
@@ -108,19 +147,19 @@ public abstract class BaseObject extends SearchObject {
         }
     }
 
-    protected String getFieldValue(String name) {
+    protected final String getFieldValue(final String nameValue) {
         String fieldValue = null;
         this.obtainJson();
         JSONObject jsonMetadata = (JSONObject) this.json.get("metadata");
-        Object objValue = jsonMetadata.get(name);
+        Object objValue = jsonMetadata.get(nameValue);
         fieldValue = objValue != null ? objValue.toString() : null;
         return fieldValue;
     }
 
-    protected JSONArray getFieldValues(String name) {
+    protected final JSONArray getFieldValues(final String nameValue) {
         this.obtainJson();
         JSONObject jsonMetadata = (JSONObject) this.json.get("metadata");
-        JSONArray objValue = (JSONArray) jsonMetadata.get(name);
+        JSONArray objValue = (JSONArray) jsonMetadata.get(nameValue);
         return objValue;
     }
 }

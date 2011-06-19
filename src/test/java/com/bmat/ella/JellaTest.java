@@ -78,9 +78,9 @@ public class JellaTest {
         query.put("track", "Otherside");
         TrackSearch trackSearch3 = jella.searchTracks(query, collection3, true, null);
         assertTrue(trackSearch3.getTotalResultCount() > 0);
-        ArrayList<Track> tracksResult4 = trackSearch3.getPage(-1);
-        assertTrue(tracksResult4.size() > 0);
-        for(Track track : tracksResult4) {
+        ArrayList<Track> tracksResult3 = trackSearch3.getPage(-1);
+        assertTrue(tracksResult3.size() > 0);
+        for(Track track : tracksResult3) {
             assertTrue(track.getTitle().toLowerCase().indexOf(query.get("track").toString().toLowerCase()) != -1);
             assertTrue(track.getArtist().getName().toLowerCase().indexOf(query.get("artist").toString().toLowerCase()) != -1);
             assertTrue(track.getCollection().equalsIgnoreCase(collection3));
@@ -133,7 +133,6 @@ public class JellaTest {
         // TEST 1 - search
         String query1 = "Red Hot Chili Peppers";
         String collection1 = "bmat";
-        String method1 = "search";
         ArtistSearch artistSearch1 = jella.searchArtists(query1, collection1, false, null);
         assertTrue(artistSearch1.getTotalResultCount() > 0);
         ArrayList<Artist> artistsResult1 = artistSearch1.getNextPage();
