@@ -15,7 +15,7 @@ public class EllaConnection {
 
     /**
      * Class constructor.
-     * @param ellaws The URL to Ella WS.
+     * @param ellawsURL The URL to Ella WS.
      * @param username A String that represents the username.
      * @param password A String that represents the password.
      * */

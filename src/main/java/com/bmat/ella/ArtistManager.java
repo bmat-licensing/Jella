@@ -1,4 +1,3 @@
-
 package com.bmat.ella;
 
 import java.util.ArrayList;
@@ -12,39 +11,37 @@ import org.json.simple.JSONObject;
  * */
 public class ArtistManager {
     /**
-     * Extract all the data from the JSONArray and create an ArrayList of
-     * Artist objects.
-     * @param ellaConnection A connection to the Ella web service.
+     * Extract all the data from the JSONArray and create an ArrayList of Artist
+     * objects.
+     * @param ellaConnection  A connection to the Ella web service.
      * @param results The JSONArray that contains the WS response.
      * @return An ArrayList of Artist objects created from the JSONArray data.
      * */
     public final ArrayList<Artist> getArtists(
-            final EllaConnection ellaConnection,
-            final JSONArray results) {
-        return this.getArtists(ellaConnection, results, null, null,
-                true, null);
+            final EllaConnection ellaConnection, final JSONArray results) {
+        return this.getArtists(ellaConnection, results, null, null, true, null);
     }
 
     /**
-     * Extract all the data from the JSONArray and create an ArrayList of
-     * Artist objects.
+     * Extract all the data from the JSONArray and create an ArrayList of Artist
+     * objects.
      * @param ellaConnection A connection to the Ella web service.
      * @param results The JSONArray that contains the WS response.
      * @param mtd A String that contains the name of the type of search.
-     * @param threshold The lowest Track score to consider. In case of null,
-     * it will be considered as 0.
+     * @param thresholdValue The lowest Track score to consider. In case
+     * of null, it will be considered as 0.
      * @param fuzzy A Boolean value that indicates if it was a fuzzy search.
      * @param metadataLinks name of the metalinks to obtain.
      * @return An ArrayList of Artist objects created from the JSONArray data.
      * */
     public final ArrayList<Artist> getArtists(
-            final EllaConnection ellaConnection,
-            final JSONArray results, final String mtd,
-            Double threshold, final boolean fuzzy,
+            final EllaConnection ellaConnection, final JSONArray results,
+            final String mtd, final Double thresholdValue, final boolean fuzzy,
             final String[] metadataLinks) {
         ArrayList<Artist> artists = new ArrayList<Artist>();
-        if (threshold == null) {
-            threshold = 0.0;
+        double threshold = 0.0;
+        if (thresholdValue != null) {
+            threshold = thresholdValue;
         }
         String method = "";
         if (mtd != null) {
@@ -74,12 +71,12 @@ public class ArtistManager {
             String collection = (String) jsonEntity.get("collection");
 
             Artist artist = new Artist(ellaConnection, artistId, collection);
-            artist.setName((String)jsonMetadata.get("name"));
+            artist.setName((String) jsonMetadata.get("name"));
             if (artist.getName() == null) {
                 continue;
             }
 
-            artist.setMbid((String)jsonMetadata.get("musicbrainz_artist_id"));
+            artist.setMbid((String) jsonMetadata.get("musicbrainz_artist_id"));
             Object apop = jsonMetadata.get("artist_popularity");
             double artistPopularity = 0.0;
             if (apop != null && !apop.toString().equals("")) {
@@ -87,22 +84,24 @@ public class ArtistManager {
             }
             artist.setPopularity(artistPopularity);
 
-            String artistLocation = (String) jsonMetadata.get(
-                    "artist_location");
-            artistLocation = artistLocation != null ? artistLocation : "";
+            String artistLocation = (String) jsonMetadata
+            .get("artist_location");
+            if (artistLocation == null) {
+                artistLocation = "";
+            }
 
             Object latlng = jsonMetadata.get("artist_latlng");
             if (latlng instanceof String) {
                 artist.setLatlng(latlng.toString().trim());
             } else if (latlng instanceof JSONArray) {
-                artist.setLatlng((JSONArray)latlng);
+                artist.setLatlng((JSONArray) latlng);
             }
 
             if (metadataLinks != null) {
                 for (String link : metadataLinks) {
                     Object linkObject = jsonMetadata.get(link);
                     if (linkObject instanceof String) {
-                        artist.setLinks(link, (String)jsonMetadata.get(link));
+                        artist.setLinks(link, (String) jsonMetadata.get(link));
                     } else if (linkObject != null) {
                         artist.setLinks(link,
                                 (JSONArray) jsonMetadata.get(link));

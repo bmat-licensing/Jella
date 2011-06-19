@@ -11,9 +11,10 @@ class Util {
      * Create an String with the array elements the separator in the middle.
      * @param array A String array with words to join.
      * @param separator A String used to separate each element.
+     * @return A string with the array joined.
      * */
-    public static String joinArray(final String[] array,
-            String separator) {
+    static String joinArray(final String[] array,
+            final String separator) {
         String result = "";
         String sep = "";
         for (String value : array) {

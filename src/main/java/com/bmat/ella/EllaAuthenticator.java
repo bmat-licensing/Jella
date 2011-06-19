@@ -19,10 +19,11 @@ public class EllaAuthenticator extends Authenticator {
 
     /**
      * Class constructor.
-     * @param username A String that represents the username.
-     * @param password A String that represents the password.
+     * @param usernameValue A String that represents the username.
+     * @param passwordValue A String that represents the password.
      * */
-    public EllaAuthenticator(final String usernameValue, final String passwordValue) {
+    public EllaAuthenticator(final String usernameValue,
+            final String passwordValue) {
         this.username = usernameValue;
         this.password = passwordValue;
     }

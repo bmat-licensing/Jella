@@ -31,7 +31,6 @@ public class Tag extends BaseObject {
      * score (Double) in position '0' and tag ID (String) in position '1'.
      * */
     private ArrayList<Object[]> similarTags;
-    
 
     /**
      * Class constructor.

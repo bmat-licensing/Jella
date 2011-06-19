@@ -15,13 +15,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import sun.security.provider.MD5;
 
 /**
  * Java Class Request.
@@ -34,24 +30,24 @@ public class Request {
      * */
     private EllaConnection ellaConnection;
     /**
-     * An instance of JSONParser
+     * An instance of JSONParser.
      * */
     private JSONParser jsonParser;
     /**
-     * Path to Jella cache directory
+     * Path to Jella cache directory.
      * */
     private String JELLA_CACHE_DIR = "../JELLA_CACHE_DIR";
     /**
-     * Specify if the cache enabled.
+     * Specifies if the cache enabled.
      * */
     private boolean CACHE_ENABLE = true;
-    
+
     /**
      * Class constructor.
-     * @param ellaConnection A connection to the Ella web service. 
+     * @param ellaConnectionValue A connection to the Ella web service.
      * */
-    public Request(EllaConnection ellaConnection) {
-        this.ellaConnection = ellaConnection;
+    public Request(final EllaConnection ellaConnectionValue) {
+        this.ellaConnection = ellaConnectionValue;
         this.jsonParser = new JSONParser();
     }
 
@@ -59,14 +55,14 @@ public class Request {
      * Executes the web service request.
      * @param method type of search that will be executed.
      * @param collection name of the queried collection.
-     * @param searchTerms request parameters. 
+     * @param searchTerms request parameters.
      * @return an Object instance of JSONObject or JSONArray.
      * @throws IOException When there is a problem with the
      * connection to Ella WS.
      * @throws ServiceException When Ella WS response fails.
      * */
-    public Object execute(String method, String collection,
-            HashMap<String, String> searchTerms)
+    public final Object execute(final String method, final String collection,
+            final HashMap<String, String> searchTerms)
     throws ServiceException, IOException {
         return this.execute(method, collection, searchTerms, false);
     }
@@ -75,33 +71,39 @@ public class Request {
      * Executes the web service request.
      * @param method type of search that will be executed.
      * @param collection name of the queried collection.
-     * @param searchTerms request parameters. 
-     * @param cacheable 
+     * @param searchTerms request parameters.
+     * @param cacheable Say if the request can be found in the cache.
      * @return an Object instance of JSONObject or JSONArray.
      * @throws IOException When there is a problem with the
      * connection to Ella WS.
      * @throws ServiceException When Ella WS response fails.
      * */
-    public Object execute(String method, String collection,
-            HashMap<String, String> searchTerms,
-            boolean cacheable)throws ServiceException, IOException{
+    public final Object execute(final String method, final String collection,
+            final HashMap<String, String> searchTerms,
+            final boolean cacheable)throws ServiceException, IOException {
         try {
             JSONObject jsonObj;
             if (this.CACHE_ENABLE && cacheable) {
-                String cacheKey = this.getCacheKey(searchTerms, method, collection);
-                jsonObj = (JSONObject) this.jsonParser.parse(this.getCachedResponse(cacheKey, searchTerms, method, collection));
+                String cacheKey = this.getCacheKey(searchTerms, method,
+                        collection);
+                jsonObj = (JSONObject) this.jsonParser.parse(
+                        this.getCachedResponse(cacheKey,
+                                searchTerms, method, collection));
             } else {
                 jsonObj = (JSONObject) this.jsonParser.parse(
-                        this.downloadResponse(method, collection, searchTerms));
+                        this.downloadResponse(method,
+                                collection, searchTerms));
             }
             Object response = jsonObj.get("response");
             if (response != null) {
                 return response;
             } else {
                 JSONObject error = (JSONObject) jsonObj.get("error");
-                throw new ServiceException((String) error.get("type"), (String)error.get("message"));
+                throw new ServiceException(
+                        (String) error.get("type"),
+                        (String) error.get("message"));
             }
-        } catch(ParseException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -110,16 +112,19 @@ public class Request {
      * Downloads the request response.
      * @param method type of search that will be executed.
      * @param collection name of the queried collection.
-     * @param searchTerms request parameters. 
+     * @param searchTerms request parameters.
      * @return a String that contains the web service response.
      * @throws IOException When there is a problem with the
      * connection to Ella WS.
      * */
-    private String downloadResponse(String method, String collection, HashMap<String, String> searchTerms) throws IOException{
+    private String downloadResponse(final String method,
+            final String collection,
+            final HashMap<String, String> searchTerms) throws IOException {
         String params = "";
         String sep = "";
         for (String key : searchTerms.keySet()) {
-            params += sep + key + "=" + URLEncoder.encode(searchTerms.get(key), "utf-8"); 
+            params += sep + key + "="
+            + URLEncoder.encode(searchTerms.get(key), "utf-8");
             sep = "&";
         }
         String url = this.ellaConnection.getEllaws();
@@ -129,35 +134,39 @@ public class Request {
         url += method + "?" + params;
 //        System.out.println("url: " + url);
         URLConnection urlCon = new URL(url).openConnection();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
-        String inputLine, jsonResponse = "";		
-        while((inputLine = bufferedReader.readLine()) != null) {
+        BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(urlCon.getInputStream()));
+        String inputLine, jsonResponse = "";
+        while ((inputLine = bufferedReader.readLine()) != null) {
             jsonResponse += inputLine;
         }
         bufferedReader.close();
         //System.out.println("JSON RESPONSE: " + jsonResponse);
         if (this.CACHE_ENABLE) {
             try {
-                String cacheKey = this.getCacheKey(searchTerms, method, collection);
+                String cacheKey = this.getCacheKey(
+                        searchTerms, method, collection);
                 if (cacheKey != null) {
-                    FileWriter cacheFile = new FileWriter(new File(this.getCacheDir(), cacheKey));
+                    FileWriter cacheFile = new FileWriter(
+                            new File(this.getCacheDir(), cacheKey));
                     cacheFile.write(jsonResponse);
                     cacheFile.close();
                 }
-            } catch(Exception e) {}
-            
+            } catch (Exception e) { }
         }
         return jsonResponse;
     }
 
     /**
      * @param cacheKey The request key that is going to be checked.
-     * @param params request parameters. 
+     * @param params request parameters.
      * @param method type of search that will be executed.
      * @param collection name of the queried collection.
      * @return A string with the request response.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
      * */
-    private final String getCachedResponse(final String cacheKey,
+    private String getCachedResponse(final String cacheKey,
             final HashMap<String, String> params, final String method,
             final String collection) throws IOException {
         if (cacheKey != null && !this.isCached(cacheKey)) {
@@ -165,14 +174,15 @@ public class Request {
         }
         try {
             String jsonResponse = "";
-            BufferedReader reader = new BufferedReader(new FileReader(new File(this.JELLA_CACHE_DIR, cacheKey)));
+            BufferedReader reader = new BufferedReader(
+                    new FileReader(new File(this.JELLA_CACHE_DIR, cacheKey)));
             String line;
             while ((line = reader.readLine()) != null) {
                 jsonResponse += line;
             }
             reader.close();
             return jsonResponse;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return this.downloadResponse(method, collection, params);
         }
     }
@@ -180,17 +190,17 @@ public class Request {
     /**
      * @return The Ella connection instance.
      * */
-    public EllaConnection getEllaConnection() {
+    public final EllaConnection getEllaConnection() {
         return this.ellaConnection;
     }
 
     /**
-     * @param params request parameters. 
+     * @param params request parameters.
      * @param method type of search that will be executed.
      * @param collection name of the queried collection.
      * @return A string with the generated request key.
      * */
-    private final String getCacheKey(final HashMap<String, String> params,
+    private String getCacheKey(final HashMap<String, String> params,
             final String method, final String collection) {
         Object[] keys = params.keySet().toArray();
         Arrays.sort(keys);
@@ -216,7 +226,7 @@ public class Request {
      * @param cacheKey The request key that is going to be checked.
      * @return True if the request is cached. False if not.
      * */
-    private final boolean isCached(final String cacheKey) {
+    private boolean isCached(final String cacheKey) {
         if (cacheKey == null) {
             return false;
         }
@@ -225,20 +235,18 @@ public class Request {
 
     /**
      * @param input A string from which you want to get the MD5 value.
+     * @throws NoSuchAlgorithmException when the MD5 algorithms is not found.
+     * @throws UnsupportedEncodingException when encoding UTF-8 fails.
      * @return A string with the MD5 value for the input.
      * */
-    private final String getMD5(final String input)
+    private String getMD5(final String input)
     throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String output = "";
-        try {
-            byte[] textBytes = input.getBytes("UTF-8");
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(textBytes);
-            byte[] hash = md.digest();
-            output = new String(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw e;
-        }
+        byte[] textBytes = input.getBytes("UTF-8");
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(textBytes);
+        byte[] hash = md.digest();
+        output = new String(hash);
         return output;
     }
 
@@ -246,7 +254,7 @@ public class Request {
      * @return A string that represents the cache directory path.
      * It creates the directory if it does not exist.
      * */
-    private final String getCacheDir() {
+    private String getCacheDir() {
         File directory = new File(this.JELLA_CACHE_DIR);
         if (!directory.exists()) {
             directory.mkdir();

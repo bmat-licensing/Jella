@@ -338,8 +338,8 @@ public class Track extends BaseObject {
     public final ArrayList<Track> getSimilarTracks(final long limit,
             final String[] filter,
             final String collectionSim, final HashMap<String,
-            HashMap<String, String>> seeds, Double threshold,
-            String similarityType) throws ServiceException, IOException {
+            HashMap<String, String>> seeds, final Double threshold,
+            final String similarityType) throws ServiceException, IOException {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("limit", Long.toString(limit));
         params.put("fetch_metadata", this.metadata);

@@ -35,7 +35,7 @@ public class TagSearch extends Search {
         if (!this.fuzzy) {
             if (method == null) {
                 mtd += "search";
-            } else{
+            } else {
                 mtd += method;
             }
             searchTerms.put("limit", "10");
@@ -82,7 +82,7 @@ public class TagSearch extends Search {
      * @param jsonResults the result node of the response.
      * @return An ArrayList of the tags contained in the jsonResults.
      * */
-    private final ArrayList<Tag> getResults(final JSONArray jsonResults) {
+    private ArrayList<Tag> getResults(final JSONArray jsonResults) {
         if (jsonResults == null) {
             return null;
         }
@@ -93,7 +93,7 @@ public class TagSearch extends Search {
             JSONObject jsonEntity = (JSONObject) jsonTag.get("entity");
             JSONObject jsonMetadata = (JSONObject) jsonEntity.get("metadata");
             String tagId = (String) jsonEntity.get("id");
-            if(tagId == null || tagId.equals("")) {
+            if (tagId == null || tagId.equals("")) {
                 continue;
             }
             String collection = (String) jsonEntity.get("collection");
@@ -108,7 +108,8 @@ public class TagSearch extends Search {
             if (this.method.indexOf("match") != -1 && score < 0.7) {
                 continue;
             }
-            Tag tag = new Tag(this.request.getEllaConnection(), tagId, collection);
+            Tag tag = new Tag(this.request.getEllaConnection(), tagId,
+                    collection);
             tag.setName((String) jsonMetadata.get("name"));
             results.add(tag);
         }
