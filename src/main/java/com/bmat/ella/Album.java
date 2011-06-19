@@ -36,9 +36,9 @@ public class Album extends BaseObject {
 
     /**
      * Class constructor.
-     * @param ellaConnection a connection to the Ella web service.
-     * @param id the id of the album.
-     * @param collection the collection name of the album.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id The id of the album.
+     * @param collection The collection name of the album.
      * */
     public Album(final EllaConnection ellaConnection,
             final String id, final String collection) {

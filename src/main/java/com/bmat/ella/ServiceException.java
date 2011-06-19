@@ -18,7 +18,7 @@ public class ServiceException extends Exception {
      * Service exception message.
      * */
     private String message;
-    
+
     /**
      * Class constructor.
      * @param typeValue Service exception type.
