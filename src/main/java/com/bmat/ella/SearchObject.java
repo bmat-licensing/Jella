@@ -133,7 +133,7 @@ public abstract class SearchObject {
     public final Object request(final String methodName,
             final HashMap<String, String> params)
     throws ServiceException, IOException {
-        return this.request(method, this.collection, params);
+        return this.request(methodName, this.collection, params);
     }
 
     /**

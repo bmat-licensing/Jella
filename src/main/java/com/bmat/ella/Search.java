@@ -43,7 +43,8 @@ public abstract class Search extends SearchObject {
      * @param ellaConnection A connection to the Ella web service.
      * @param collection The collection name.
      * */
-    public Search(EllaConnection ellaConnection, String collection) {
+    public Search(final EllaConnection ellaConnection,
+            final String collection) {
         super(ellaConnection, collection);
         this.lastPageIndex = -1;
         this.hits = null;
@@ -78,8 +79,8 @@ public abstract class Search extends SearchObject {
      * connection to Ella WS.
      * @throws ServiceException When Ella WS response fails.
      * */
-    protected JSONArray retrievePage(long pageIndex)
-    throws ServiceException, IOException {		
+    protected final JSONArray retrievePage(final long pageIndex)
+    throws ServiceException, IOException {
         HashMap<String, String> params = this.getParams();
         if (this.method.indexOf("resolve") == -1) {
             long offset = 0;
@@ -90,8 +91,8 @@ public abstract class Search extends SearchObject {
         }
         JSONObject response = (JSONObject) this.request(params);
         if (response != null) {
-            return (JSONArray)response.get("results");
-        } else{
+            return (JSONArray) response.get("results");
+        } else {
             return null;
         }
     }
@@ -102,7 +103,7 @@ public abstract class Search extends SearchObject {
      * connection to Ella WS.
      * @throws ServiceException When Ella WS response fails.
      * */
-    protected JSONArray retrieveNextPage()
+    protected final JSONArray retrieveNextPage()
     throws ServiceException, IOException {
         this.lastPageIndex += 1;
         return this.retrievePage(this.lastPageIndex);
@@ -114,7 +115,7 @@ public abstract class Search extends SearchObject {
      * connection to Ella WS.
      * @throws ServiceException When Ella WS response fails.
      * */
-    public long getTotalResultCount()
+    protected final long getTotalResultCount()
     throws ServiceException, IOException {
         if (this.hits != null) {
             return this.hits;
@@ -123,33 +124,32 @@ public abstract class Search extends SearchObject {
         if (this.method.indexOf("resolve") == -1) {
             params.put("offset", "0");
             params.put("fetch_metadata", "_none");
-        }
-        else
+        } else {
             params.remove("fetch_metadata");
-
-        params.put("limit", "1");		
+        }
+        params.put("limit", "1");
         JSONObject response = (JSONObject) this.request(params);
         JSONObject stats = (JSONObject) response.get("stats");
         long totalHits;
         if (this.collection != null) {
             totalHits = new Long(stats.get("total_hits").toString());
-        } else{
+        } else {
             totalHits = 0;
             JSONObject jsonHits = (JSONObject) stats.get("total_hits");
-            for (Object key:jsonHits.keySet()) {
+            for (Object key : jsonHits.keySet()) {
                 totalHits += new Long(jsonHits.get(key.toString()).toString());
             }
         }
         this.hits = totalHits;
-        return this.hits;	
+        return this.hits;
     }
 
     /**
-     * @return a HaspMap generated as a copy of searchTerms. 
+     * @return a HaspMap generated as a copy of searchTerms.
      * */
     private HashMap<String, String> getParams() {
         HashMap<String, String> params = new HashMap<String, String>();
-        for (String key:this.searchTerms.keySet()) {
+        for (String key : this.searchTerms.keySet()) {
             params.put(key, this.searchTerms.get(key).toString());
         }
         return params;
