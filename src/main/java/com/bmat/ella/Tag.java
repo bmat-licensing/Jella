@@ -13,7 +13,7 @@ import org.json.simple.JSONObject;
  * Represents a BMAT Tag.
  * @author Harrington Joseph (Harph)
  * */
-public class Tag extends BaseObject {
+public class Tag extends BaseObject implements Comparable<Tag> {
     /**
      * Tag name.
      * */
@@ -83,8 +83,8 @@ public class Tag extends BaseObject {
     public final ArrayList<Artist> getSimilarArtists()
     throws ServiceException, IOException {
         return this.getSimilarArtists(
-                this.DEFAULT_LIMIT,
-                this.DEFAULT_COLLECTION
+                Jella.getDEFAULT_LIMIT(),
+                Jella.getDEFAULT_COLLECTION()
         );
     }
 
@@ -140,9 +140,9 @@ public class Tag extends BaseObject {
     public final ArrayList<Track> getSimilarTracks()
     throws ServiceException, IOException {
         return this.getSimilarTracks(
-                this.DEFAULT_LIMIT,
+                Jella.getDEFAULT_LIMIT(),
                 null,
-                this.DEFAULT_COLLECTION,
+                Jella.getDEFAULT_COLLECTION(),
                 null,
                 true
         );
@@ -236,5 +236,23 @@ public class Tag extends BaseObject {
                     this.request.getEllaConnection(), results, "style");
         }
         return this.similarTags;
+    }
+
+    /**
+     * Compares this one album to another.
+     * @param object An Tag instance to be compared.
+     * @return The value of the string comparation between IDs.
+     * */
+    public final int compareTo(final Tag object) {
+        return this.id.compareTo(object.id);
+    }
+
+    /**
+     * Checks if the IDs are the same.
+     * @param object An Tag instance to be compared.
+     * @return The value of the string equals comparation between IDs.
+     * */
+    public final boolean equals(final Tag object) {
+        return this.id.equals(object.id);
     }
 }

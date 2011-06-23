@@ -13,7 +13,7 @@ import org.json.simple.JSONObject;
  * Represents a BMAT Track.
  * @author Harrington Joseph (Harph)
  * */
-public class Track extends BaseObject {
+public class Track extends BaseObject implements Comparable<Track> {
     /**
      * Track title.
      * */
@@ -64,7 +64,7 @@ public class Track extends BaseObject {
     public Track(final EllaConnection ellaConnection, final String id,
             final String collection) {
         super(ellaConnection, id, collection);
-        this.method = "/tracks/" + this.id + ".json";
+        this.method = "/tracks/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"spotify_track_url",
                 "grooveshark_track_url", "amazon_track_url",
                 "itms_track_url", "hypem_track_url",
@@ -318,7 +318,7 @@ public class Track extends BaseObject {
      * */
     public final ArrayList<Track> getSimilarTracks()
     throws ServiceException, IOException {
-        return this.getSimilarTracks(this.DEFAULT_LIMIT,
+        return this.getSimilarTracks(Jella.getDEFAULT_LIMIT(),
                 null, null, null, null, null);
     }
 
@@ -384,5 +384,23 @@ public class Track extends BaseObject {
         ArrayList<Track> similars = new TrackManager().getTracks(
                 this.request.getEllaConnection(), results, threshold);
         return similars;
+    }
+
+    /**
+     * Compares this one album to another.
+     * @param object A Track instance to be compared.
+     * @return The value of the string comparation between IDs.
+     * */
+    public final int compareTo(final Track object) {
+        return this.id.compareTo(object.id);
+    }
+
+    /**
+     * Checks if the IDs are the same.
+     * @param object A Track instance to be compared.
+     * @return The value of the string equals comparation between IDs.
+     * */
+    public final boolean equals(final Track object) {
+        return this.id.equals(object.id);
     }
 }

@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
  * Represents a BMAT Album.
  * @author Harrington Joseph (Harph)
  * */
-public class Album extends BaseObject {
+public class Album extends BaseObject implements Comparable<Album> {
     /**
      * Title of the album.
      * */
@@ -43,7 +43,7 @@ public class Album extends BaseObject {
     public Album(final EllaConnection ellaConnection,
             final String id, final String collection) {
         super(ellaConnection, id, collection);
-        this.method = "/releases/" + this.id + ".json";
+        this.method = "/releases/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"spotify_release_url",
                 "amazon_release_url", "itms_release_url",
                 "rhapsody_release_url", "emusic_release_url",
@@ -218,5 +218,23 @@ public class Album extends BaseObject {
         this.tracks = new TrackManager().getTracks(
                 this.request.getEllaConnection(), results, this);
         return this.tracks;
+    }
+
+    /**
+     * Compares this one album to another.
+     * @param object An Album instance to be compared.
+     * @return The value of the string comparation between IDs.
+     * */
+    public final int compareTo(final Album object) {
+        return this.id.compareTo(object.id);
+    }
+
+    /**
+     * Checks if the IDs are the same.
+     * @param object An Album instance to be compared.
+     * @return The value of the string equals comparation between IDs.
+     * */
+    public final boolean equals(final Album object) {
+        return this.id.equals(object.id);
     }
 }

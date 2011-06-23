@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
  * Represents a BMAT Artist.
  * @author Harrington Joseph (Harph)
  * */
-public class Artist extends BaseObject {
+public class Artist extends BaseObject implements Comparable<Artist> {
     /**
      * Artist name.
      * */
@@ -405,5 +405,23 @@ public class Artist extends BaseObject {
                     this.request.getEllaConnection(), results, tagWeight);
         }
         return this.tags;
+    }
+
+    /**
+     * Compares this one album to another.
+     * @param object An Artist instance to be compared.
+     * @return The value of the string comparation between IDs.
+     * */
+    public final int compareTo(final Artist object) {
+        return this.id.compareTo(object.id);
+    }
+
+    /**
+     * Checks if the IDs are the same.
+     * @param object An Artist instance to be compared.
+     * @return The value of the string equals comparation between IDs.
+     * */
+    public final boolean equals(final Artist object) {
+        return this.id.equals(object.id);
     }
 }
