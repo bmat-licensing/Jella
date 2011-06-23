@@ -4,6 +4,7 @@ package com.bmat.ella;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,7 +85,15 @@ public class JellaTest {
             assertTrue(track.getTitle().toLowerCase().indexOf(query.get("track").toString().toLowerCase()) != -1);
             assertTrue(track.getArtist().getName().toLowerCase().indexOf(query.get("artist").toString().toLowerCase()) != -1);
             assertTrue(track.getCollection().equalsIgnoreCase(collection3));
-        }		
+        }
+        // TEST 4 - search
+        String artist4 = "faith";
+        TrackSearch trackSearch4 = jella.searchTracks(null, "bmat", false, null, new String[]{"artist:" + artist4, "mood:happy"});
+        assertTrue(trackSearch4.getTotalResultCount() > 0);
+        for (Track track : trackSearch4.getNextPage()) {
+            assertTrue(track.getArtistName().toLowerCase().indexOf(artist4) != -1);
+        }
+        
     }
 
     /**
@@ -121,6 +130,15 @@ public class JellaTest {
         artist.put("entity", "artist");
         seeds.put("6b90be58-2540-41d8-8bce-17e7e19c2a97", artist);
         assertTrue(track.getSimilarTracks(30, new String[]{"speed:slow", "mood:blue"}, "bmat", seeds, null, null).size() > 0);
+
+        Track track2 = new Track(jella.getEllaConnection(), "6748e70b-9c61-4cc3-b2fb-9aa32321a050", "bmat");
+        ArrayList<Track> similars2 = track2.getSimilarTracks(30, new String[]{"track_popularity:[5.0 TO 10.0]", "artist_iso_country:ES"}, "bmat", null, null, null);
+        assertTrue(similars2.size() > 0);
+        for (Track sim : similars2) {
+            double popularity = sim.getPopularity();
+            assertTrue(popularity >= 5.0 && popularity <= 10.0);
+        }
+
     }
 
     /**
@@ -337,6 +355,131 @@ public class JellaTest {
         if(tracks2.size() > 1) {
             assertTrue(tracks2.get(0).getArtistId().equals(artistId));
         }
-        
+    }
+
+    /**
+     * Test Jella compareTo function for Albums.
+     * */
+    @Test public void testCompareToAlbum() {
+        String humanId = "eea44fb1-338b-4c51-92c8-888f8e6b6ae0";
+        String thinkTankId = "4499bbd8-d847-4dc3-8c7a-19f4a20dbb96";
+        String getBornId = "ba67761d-17fc-4fe3-b3cc-6ef662243789";
+        String oakenfoldAnthemsId = "d2654764-aaa5-4678-aedb-5b2ad8925047";
+        Album human = new Album(jella.getEllaConnection(), humanId, "bmat");
+        Album thinkTank = new Album(jella.getEllaConnection(), thinkTankId, "bmat");
+        Album getBorn = new Album(jella.getEllaConnection(), getBornId, "bmat");
+        Album oakenfoldAnthems = new Album(jella.getEllaConnection(), oakenfoldAnthemsId, "bmat");
+        Album[] artistAlbum = new Album[]{human, thinkTank, getBorn, oakenfoldAnthems};
+        Arrays.sort(artistAlbum);
+        assertTrue(artistAlbum[0].getId().equals(thinkTankId));
+        assertTrue(artistAlbum[1].getId().equals(getBornId));
+        assertTrue(artistAlbum[2].getId().equals(oakenfoldAnthemsId));
+        assertTrue(artistAlbum[3].getId().equals(humanId));
+    }
+
+    /**
+     * Test Jella equals function for Albums.
+     * */
+    @Test public void testEqualsAlbum() {
+        String humanId = "eea44fb1-338b-4c51-92c8-888f8e6b6ae0";
+        String thinkTankId = "4499bbd8-d847-4dc3-8c7a-19f4a20dbb96";
+        Album album1 = new Album(jella.getEllaConnection(), humanId, "bmat");
+        Album album2 = new Album(jella.getEllaConnection(), humanId, "bmat");
+        Album album3 = new Album(jella.getEllaConnection(), thinkTankId, "bmat");
+        assertTrue(album1.equals(album2));
+        assertFalse(album1.equals(album3));
+    }
+
+    /**
+     * Test Jella compareTo function for Artists.
+     * */
+    @Test public void testCompareToArtist() {
+        String u2Id = "75e4aefb-f594-4ed4-b8ff-9a83fbd54dd3";
+        String jetId = "bd083d22-e5a4-4a56-a845-888e02c0f269";
+        String blurId = "c47a47c7-ac47-4905-8c8a-9367cecba0b1";
+        String theKillersId = "46fa0478-f5fc-4ff5-824d-686ef8e1af28";
+        Artist u2 = new Artist(jella.getEllaConnection(), u2Id, "bmat");
+        Artist jet = new Artist(jella.getEllaConnection(), jetId, "bmat");
+        Artist blur = new Artist(jella.getEllaConnection(), blurId, "bmat");
+        Artist theKillers = new Artist(jella.getEllaConnection(), theKillersId, "bmat");
+        Artist[] artistArray = new Artist[]{u2, jet, blur, theKillers};
+        Arrays.sort(artistArray);
+        assertTrue(artistArray[0].getId().equals(theKillersId));
+        assertTrue(artistArray[1].getId().equals(u2Id));
+        assertTrue(artistArray[2].getId().equals(jetId));
+        assertTrue(artistArray[3].getId().equals(blurId));
+    }
+
+    /**
+     * Test Jella equals function for Artists.
+     * */
+    @Test public void testEqualsArtist() {
+        String u2Id = "75e4aefb-f594-4ed4-b8ff-9a83fbd54dd3";
+        String jetId = "bd083d22-e5a4-4a56-a845-888e02c0f269";
+        Artist artist1 = new Artist(jella.getEllaConnection(), u2Id, "bmat");
+        Artist artist2 = new Artist(jella.getEllaConnection(), u2Id, "bmat");
+        Artist artist3 = new Artist(jella.getEllaConnection(), jetId, "bmat");
+        assertTrue(artist1.equals(artist2));
+        assertFalse(artist1.equals(artist3));
+    }
+
+    /**
+     * Test Jella compareTo function for Tags.
+     * */
+    @Test public void testCompareToTag() {
+        Tag happy = new Tag(jella.getEllaConnection(), "happy", "tags");
+        Tag sad = new Tag(jella.getEllaConnection(), "sad", "tags");
+        Tag excited = new Tag(jella.getEllaConnection(), "excited", "tags");
+        Tag motivated = new Tag(jella.getEllaConnection(), "motivated", "tags");
+        Tag[] tagArray = new Tag[]{happy, sad, excited, motivated};
+        Arrays.sort(tagArray);
+        assertTrue(tagArray[0].getId().equals(excited.getId()));
+        assertTrue(tagArray[1].getId().equals(happy.getId()));
+        assertTrue(tagArray[2].getId().equals(motivated.getId()));
+        assertTrue(tagArray[3].getId().equals(sad.getId()));
+    }
+
+    /**
+     * Test Jella equals function for Tags.
+     * */
+    @Test public void testEqualsTag() {
+        Tag tag1 = new Tag(jella.getEllaConnection(), "happy", "tags");
+        Tag tag2 = new Tag(jella.getEllaConnection(), "happy", "tags");
+        Tag tag3 = new Tag(jella.getEllaConnection(), "sad", "tags");
+        assertTrue(tag1.equals(tag2));
+        assertFalse(tag1.equals(tag3));
+    }
+
+    /**
+     * Test Jella compareTo function for Tracks.
+     * */
+    @Test public void testCompareToTrack() {
+        String beautifulDayId = "19d4904c-f2f2-4a95-887c-7e5ddd3fb358";
+        String areYouGonnaBeMyGirl = "3830e844-a9fd-43e1-8ca8-0eb5fd68ac54";
+        String ambulanceId = "861cb75e-97be-44b1-b71b-1cfe4a07b831";
+        String fellInLoveWithAGirlId = "8ef0c2f1-99a7-4b6b-86ba-534f0e38eb3a";
+        Track track1 = new Track(jella.getEllaConnection(), beautifulDayId, "bmat");
+        Track track2 = new Track(jella.getEllaConnection(), areYouGonnaBeMyGirl, "bmat");
+        Track track3 = new Track(jella.getEllaConnection(), ambulanceId, "bmat");
+        Track track4 = new Track(jella.getEllaConnection(), fellInLoveWithAGirlId, "bmat");
+        Track[] trackArray = new Track[]{track1, track2, track3, track4};
+        Arrays.sort(trackArray);
+        assertTrue(trackArray[0].getId().equals(beautifulDayId));
+        assertTrue(trackArray[1].getId().equals(areYouGonnaBeMyGirl));
+        assertTrue(trackArray[2].getId().equals(ambulanceId));
+        assertTrue(trackArray[3].getId().equals(fellInLoveWithAGirlId));
+    }
+
+    /**
+     * Test Jella equals function for Tracks.
+     * */
+    @Test public void testEqualsTrack() {
+        String beautifulDayId = "19d4904c-f2f2-4a95-887c-7e5ddd3fb358";
+        String areYouGonnaBeMyGirl = "3830e844-a9fd-43e1-8ca8-0eb5fd68ac54";
+        Track track1 = new Track(jella.getEllaConnection(), beautifulDayId, "bmat");
+        Track track2 = new Track(jella.getEllaConnection(), beautifulDayId, "bmat");
+        Track track3 = new Track(jella.getEllaConnection(), areYouGonnaBeMyGirl, "bmat");
+        assertTrue(track1.equals(track2));
+        assertFalse(track1.equals(track3));
     }
 }
