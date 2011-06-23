@@ -31,14 +31,6 @@ public abstract class BaseObject extends SearchObject {
      * Object JSON source.
      * */
     protected JSONObject json;
-    /**
-     * Default max number of results.
-     * */
-    protected final long DEFAULT_LIMIT = 20;
-    /**
-     * Default collection name.
-     * */
-    protected final String DEFAULT_COLLECTION = "bmat";
 
     /**
      * Class constructor.

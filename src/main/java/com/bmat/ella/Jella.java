@@ -11,7 +11,27 @@ public class Jella {
      * An instance of Ella WS connection.
      * */
     private EllaConnection ellaConnection;
-
+    /**
+     * Total number of results per page.
+     * Default value 10.
+     * */
+    private static int RESULTS_PER_PAGE = 10;
+    /**
+     * Default max number of results.
+     * Default value 20.
+     * */
+    private static long DEFAULT_LIMIT = 20;
+    /**
+     * Default collection name.
+     * Defautl name "bmat".
+     * */
+    private static String DEFAULT_COLLECTION = "bmat";
+    /**
+     * Path to Jella cache directory.
+     * Default path "../JELLA_CACHE_DIR".
+     * */
+    private static String JELLA_CACHE_DIR = "../JELLA_CACHE_DIR";
+    
     /**
      * Class constructor.
      * @param ellawsURL The URL to Ella WS.
@@ -39,6 +59,66 @@ public class Jella {
         this.ellaConnection = ellaConnectionValue;
     }
 
+    /**
+     * @return The value of the constant RESULTS_PER_PAGE.
+     * */
+    public static int getRESULTS_PER_PAGE() {
+        return RESULTS_PER_PAGE;
+    }
+
+    /**
+     * Modifies the RESULTS_PER_PAGE value.
+     * @param rESULTS_PER_PAGE The value of RESULTS_PER_PAGE.
+     * */
+    public static void setRESULTS_PER_PAGE(int rESULTS_PER_PAGE) {
+        RESULTS_PER_PAGE = rESULTS_PER_PAGE;
+    }
+
+    /**
+     * @return The value of the constant DEFAULT_LIMIT.
+     * */
+    public static long getDEFAULT_LIMIT() {
+        return DEFAULT_LIMIT;
+    }
+
+    /**
+     * Modifies the DEFAULT_LIMIT value.
+     * @param dEFAULT_LIMIT The value of DEFAULT_LIMIT.
+     * */
+    public static void setDEFAULT_LIMIT(long dEFAULT_LIMIT) {
+        DEFAULT_LIMIT = dEFAULT_LIMIT;
+    }
+
+    /**
+     * @return The path to the cache directory.
+     * */
+    public static String getJELLA_CACHE_DIR() {
+        return JELLA_CACHE_DIR;
+    }
+
+    /**
+     * Modifies the path of the cache directory.
+     * @param jELLA_CACHE_DIR The path of the cache directory.
+     * */
+    public static void setJELLA_CACHE_DIR(String jELLA_CACHE_DIR) {
+        JELLA_CACHE_DIR = jELLA_CACHE_DIR;
+    }
+
+    /**
+     * @return The name of the constant DEFAULT_COLLECTION.
+     * */
+    public static String getDEFAULT_COLLECTION() {
+        return DEFAULT_COLLECTION;
+    }
+
+    /**
+     * Modifies the DEFAULT_COLLECTION name.
+     * @param dEFAULT_COLLECTION The name of DEFAULT_COLLECTION.
+     * */
+    public static void setDEFAULT_COLLECTION(String dEFAULT_COLLECTION) {
+        DEFAULT_COLLECTION = dEFAULT_COLLECTION;
+    }
+    
     /**
      * Creates a TrackSeach instance with "search" as method type.
      * @param query A string that contains the value of the query.

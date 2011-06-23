@@ -12,7 +12,7 @@ public abstract class SearchObject {
     /**
      * Format of request response.
      * */
-    protected final String RESPONSE_TYPE = ".json";
+    protected static final String RESPONSE_TYPE = ".json";
     /**
      * Request object associated.
      * */

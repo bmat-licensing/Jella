@@ -34,10 +34,6 @@ public class Request {
      * */
     private JSONParser jsonParser;
     /**
-     * Path to Jella cache directory.
-     * */
-    private String JELLA_CACHE_DIR = "../JELLA_CACHE_DIR";
-    /**
      * Specifies if the cache enabled.
      * */
     private boolean CACHE_ENABLE = true;
@@ -175,7 +171,7 @@ public class Request {
         try {
             String jsonResponse = "";
             BufferedReader reader = new BufferedReader(
-                    new FileReader(new File(this.JELLA_CACHE_DIR, cacheKey)));
+                    new FileReader(new File(Jella.getJELLA_CACHE_DIR(), cacheKey)));
             String line;
             while ((line = reader.readLine()) != null) {
                 jsonResponse += line;
@@ -230,7 +226,7 @@ public class Request {
         if (cacheKey == null) {
             return false;
         }
-        return (new File(this.JELLA_CACHE_DIR, cacheKey)).exists();
+        return (new File(Jella.getJELLA_CACHE_DIR(), cacheKey)).exists();
     }
 
     /**
@@ -255,10 +251,10 @@ public class Request {
      * It creates the directory if it does not exist.
      * */
     private String getCacheDir() {
-        File directory = new File(this.JELLA_CACHE_DIR);
+        File directory = new File(Jella.getJELLA_CACHE_DIR());
         if (!directory.exists()) {
             directory.mkdir();
         }
-        return this.JELLA_CACHE_DIR;
+        return Jella.getJELLA_CACHE_DIR();
     }
 }

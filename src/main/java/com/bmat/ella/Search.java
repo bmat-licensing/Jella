@@ -14,10 +14,6 @@ import org.json.simple.JSONObject;
  * */
 public abstract class Search extends SearchObject {
     /**
-     * Total number of results per page.
-     * */
-    private int RESULTS_PER_PAGE = 10;
-    /**
      * Value that indicates if it was a fuzzy search.
      * */
     protected boolean fuzzy = false;
@@ -85,7 +81,7 @@ public abstract class Search extends SearchObject {
         if (this.method.indexOf("resolve") == -1) {
             long offset = 0;
             if (pageIndex != 0) {
-                offset = this.RESULTS_PER_PAGE * pageIndex;
+                offset = Jella.getRESULTS_PER_PAGE() * pageIndex;
             }
             params.put("offset", Long.toString(offset));
         }
