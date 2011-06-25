@@ -3,18 +3,21 @@ package com.bmat.ella;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -33,10 +36,6 @@ public class Request {
      * An instance of JSONParser.
      * */
     private JSONParser jsonParser;
-    /**
-     * Specifies if the cache enabled.
-     * */
-    private boolean CACHE_ENABLE = true;
 
     /**
      * Class constructor.
@@ -79,7 +78,7 @@ public class Request {
             final boolean cacheable)throws ServiceException, IOException {
         try {
             JSONObject jsonObj;
-            if (this.CACHE_ENABLE && cacheable) {
+            if (Jella.isCacheEnable() && cacheable) {
                 String cacheKey = this.getCacheKey(searchTerms, method,
                         collection);
                 jsonObj = (JSONObject) this.jsonParser.parse(
@@ -116,41 +115,59 @@ public class Request {
     private String downloadResponse(final String method,
             final String collection,
             final HashMap<String, String> searchTerms) throws IOException {
-        String params = "";
+        StringBuffer params = new StringBuffer();
         String sep = "";
-        for (String key : searchTerms.keySet()) {
-            params += sep + key + "="
-            + URLEncoder.encode(searchTerms.get(key), "utf-8");
-            sep = "&";
+        if (searchTerms != null) {
+            for (Map.Entry<String, String> param : searchTerms.entrySet()) {
+                params.append(sep + param.getKey() + "="
+                + URLEncoder.encode(param.getValue(), "utf-8"));
+                sep = "&";
+            }
         }
         String url = this.ellaConnection.getEllaws();
         if (collection != null) {
             url += "/collections/" + collection;
         }
-        url += method + "?" + params;
-//        System.out.println("url: " + url);
-        URLConnection urlCon = new URL(url).openConnection();
-        BufferedReader bufferedReader = new BufferedReader(
+        url += method + "?" + params.toString();
+//        System.out.println("URL: " + url);
+        HttpURLConnection urlCon = (HttpURLConnection) new URL(
+                url).openConnection();
+        BufferedReader bufferedReader;
+        boolean error = false;
+        try {
+            bufferedReader = new BufferedReader(
                 new InputStreamReader(urlCon.getInputStream()));
-        String inputLine, jsonResponse = "";
+        } catch (FileNotFoundException fnfe) {
+            bufferedReader = new BufferedReader(
+                    new InputStreamReader(urlCon.getErrorStream()));
+            error = true;
+        }
+        String inputLine, jsonResponseStr; 
+        StringBuffer jsonResponse = new StringBuffer();
         while ((inputLine = bufferedReader.readLine()) != null) {
-            jsonResponse += inputLine;
+            jsonResponse.append(inputLine);
         }
         bufferedReader.close();
+        jsonResponseStr = jsonResponse.toString();
 //        System.out.println("JSON RESPONSE: " + jsonResponse);
-        if (this.CACHE_ENABLE) {
+        if (!error && Jella.isCacheEnable()) {
+            FileWriter cacheFile = null;
             try {
                 String cacheKey = this.getCacheKey(
                         searchTerms, method, collection);
                 if (cacheKey != null) {
-                    FileWriter cacheFile = new FileWriter(
+                    cacheFile = new FileWriter(
                             new File(this.getCacheDir(), cacheKey));
-                    cacheFile.write(jsonResponse);
+                    cacheFile.write(jsonResponseStr);
                     cacheFile.close();
                 }
-            } catch (Exception e) { }
+            } catch (IOException e) {
+                if (cacheFile != null) {
+                    cacheFile.close();
+                }
+            }
         }
-        return jsonResponse;
+        return jsonResponseStr;
     }
 
     /**
@@ -169,16 +186,17 @@ public class Request {
             return this.downloadResponse(method, collection, params);
         }
         try {
-            String jsonResponse = "";
+            StringBuffer jsonResponse = new StringBuffer();
             BufferedReader reader = new BufferedReader(
-                    new FileReader(new File(Jella.getJELLA_CACHE_DIR(), cacheKey)));
+                    new FileReader(
+                            new File(Jella.getJellaCacheDir(), cacheKey)));
             String line;
             while ((line = reader.readLine()) != null) {
-                jsonResponse += line;
+                jsonResponse.append(line);
             }
             reader.close();
-            return jsonResponse;
-        } catch (Exception e) {
+            return jsonResponse.toString();
+        } catch (IOException e) {
             return this.downloadResponse(method, collection, params);
         }
     }
@@ -198,19 +216,22 @@ public class Request {
      * */
     private String getCacheKey(final HashMap<String, String> params,
             final String method, final String collection) {
-        Object[] keys = params.keySet().toArray();
-        Arrays.sort(keys);
-        String cacheKey = "";
+        StringBuffer cacheKey = new StringBuffer();
         if (collection != null && !collection.equals("")) {
-            cacheKey = collection + method;
+            cacheKey.append(collection + method);
         } else {
-            cacheKey = method;
+            cacheKey.append(method);
         }
-        for (Object key : keys) {
-            cacheKey += key.toString() + params.get(key.toString());
+        if (params != null) {
+            Object[] keys = params.keySet().toArray();
+            Arrays.sort(keys);
+            for (Object key : keys) {
+                cacheKey.append(key.toString() + params.get(key.toString()));
+            }
         }
         try {
-            return URLEncoder.encode(this.getMD5(cacheKey), "utf-8");
+            return URLEncoder.encode(this.getMD5(cacheKey.toString()),
+                    "utf-8");
         } catch (NoSuchAlgorithmException e) {
             return null;
         } catch (UnsupportedEncodingException e) {
@@ -226,7 +247,7 @@ public class Request {
         if (cacheKey == null) {
             return false;
         }
-        return (new File(Jella.getJELLA_CACHE_DIR(), cacheKey)).exists();
+        return (new File(Jella.getJellaCacheDir(), cacheKey)).exists();
     }
 
     /**
@@ -251,10 +272,10 @@ public class Request {
      * It creates the directory if it does not exist.
      * */
     private String getCacheDir() {
-        File directory = new File(Jella.getJELLA_CACHE_DIR());
-        if (!directory.exists()) {
-            directory.mkdir();
+        File directory = new File(Jella.getJellaCacheDir());
+        if (!directory.exists() && !directory.mkdir()) {
+            return null;
         }
-        return Jella.getJELLA_CACHE_DIR();
+        return Jella.getJellaCacheDir();
     }
 }

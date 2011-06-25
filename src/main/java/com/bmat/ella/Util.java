@@ -6,7 +6,14 @@ package com.bmat.ella;
  * Utility class.
  * @author Harrington Joseph (Harph)
  * */
-class Util {
+final class Util {
+    /**
+     * Avoiding default constructor.
+     * */
+    private Util() {
+
+    }
+
     /**
      * Create an String with the array elements the separator in the middle.
      * @param array A String array with words to join.
@@ -15,12 +22,13 @@ class Util {
      * */
     static String joinArray(final String[] array,
             final String separator) {
-        String result = "";
+        StringBuffer bufResult = new StringBuffer();
         String sep = "";
         for (String value : array) {
-            result += sep + value;
+            bufResult.append(sep);
+            bufResult.append(value);
             sep = separator;
         }
-        return result;
+        return bufResult.toString();
     }
 }

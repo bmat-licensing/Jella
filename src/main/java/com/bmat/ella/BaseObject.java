@@ -1,7 +1,9 @@
 
 package com.bmat.ella;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,7 +20,7 @@ public abstract class BaseObject extends SearchObject {
     /**
      * Object recommend.
      * */
-    protected Boolean recommend;
+    private Boolean recommend;
     /**
      * Object mbid.
      * */
@@ -26,11 +28,11 @@ public abstract class BaseObject extends SearchObject {
     /**
      * Object related links.
      * */
-    protected HashMap<String, String[]> links;
+    private HashMap<String, String[]> links;
     /**
      * Object JSON source.
      * */
-    protected JSONObject json;
+    private JSONObject json;
 
     /**
      * Class constructor.
@@ -75,18 +77,11 @@ public abstract class BaseObject extends SearchObject {
      * */
     public final void setRecommend(final Object recommendValue) {
         if (recommendValue != null) {
-            this.recommend = new Boolean(
+            this.recommend = Boolean.valueOf(
                     recommendValue.toString().toLowerCase());
         } else {
             this.recommend = true;
         }
-    }
-
-    /**
-     * @return The object mbid.
-     * */
-    protected String getMbid() {
-        return mbid;
     }
 
     /**
@@ -122,7 +117,7 @@ public abstract class BaseObject extends SearchObject {
                     }
                 }
             } catch (Exception e) {
-                return this.links;
+                return null;
             }
         }
         return links;
@@ -180,10 +175,12 @@ public abstract class BaseObject extends SearchObject {
             try {
                 HashMap<String, String> fetchMetadata =
                     new HashMap<String, String>();
-                fetchMetadata.put("fetch_metadata", this.metadata);
+                fetchMetadata.put("fetch_metadata", "_all");
                 JSONArray response = (JSONArray) this.request(fetchMetadata);
                 this.json = (JSONObject) response.get(0);
-            } catch (Exception e) {
+            } catch (ServiceException se) {
+                this.json = null;
+            } catch (IOException ioe) {
                 this.json = null;
             }
         }
@@ -214,5 +211,55 @@ public abstract class BaseObject extends SearchObject {
         JSONObject jsonMetadata = (JSONObject) this.json.get("metadata");
         JSONArray objValue = (JSONArray) jsonMetadata.get(nameValue);
         return objValue;
+    }
+
+    /**
+     * @param seeds The seeds to be set to the params HashMap.
+     * @param params The HashMap instance where the seeds are going to be set.
+     * */
+    protected final void setParamsSeedsField(final HashMap<String,
+            HashMap<String, String>> seeds,
+            final HashMap<String, String> params) {
+        if (seeds != null) {
+            for (Map.Entry<String,
+                    HashMap<String, String>> seed : seeds.entrySet()) {
+                if (params.containsKey("seeds")) {
+                    params.put("seeds", params.get("seeds") + ","
+                            + seed.getValue().get("collection") + ":"
+                            + seed.getValue().get("entity") + "/"
+                            + seed.getKey());
+                } else {
+                    params.put("seeds", seed.getValue().get("collection")
+                            + ":" + seed.getValue().get("entity") + "/"
+                            + seed.getKey());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searchs and fetchs tracks.
+     * @param trackMetadata Track metadata to be queried.
+     * @param fetchCollection The name of the collection.
+     * @param method Kind of search to execute.
+     * @return The result of the search.
+     * @throws IOException When there is a problem with the
+     * connection to Ella WS.
+     * @throws ServiceException When Ella WS response fails.
+     * */
+    protected final JSONArray fetchTracks(final String trackMetadata,
+            final String fetchCollection, final String method)
+    throws ServiceException, IOException {
+        String[] trackMetadataLinks = new String[]{"spotify_track_url",
+                "grooveshark_track_url", "amazon_track_url", "itms_track_url",
+                "hypem_track_url", "musicbrainz_track_url"};
+        String metadata = trackMetadata;
+        metadata += Util.joinArray(trackMetadataLinks, ",");
+
+        HashMap<String, String> fetchMetadata = new HashMap<String, String>();
+        fetchMetadata.put("fetch_metadata", metadata);
+        JSONObject response = (JSONObject) this.request(method, fetchMetadata);
+        JSONArray results = (JSONArray) response.get("results");
+        return results;
     }
 }

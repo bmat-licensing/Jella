@@ -111,7 +111,7 @@ public class TrackSearch extends Search {
      * @param method A String with the type of search.
      * */
     private void initialize(final String method) {
-        this.method = method + this.RESPONSE_TYPE;
+        this.method = method + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"spotify_track_url",
                 "grooveshark_track_url", "amazon_track_url",
                 "musicbrainz_track_url", "hypem_track_url"};

@@ -3,6 +3,7 @@ package com.bmat.ella;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -54,19 +55,6 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * score (Double) in position '0' and tag ID (String) in position '1'.
      * */
     private ArrayList<Object[]> tags;
-    /**
-     * Default max number of tag results.
-     * */
-    private final int DEFAULT_TAG_LIMIT = 4;
-    /**
-     * Default tag type.
-     * */
-    private final String DEFAULT_TAG_TYPE = "style";
-    /**
-     * Default tag weight.
-     * */
-    private final double DEFAULT_TAG_WEIGHT = 0.70;
-
 
     /**
      * Class constructor.
@@ -77,7 +65,7 @@ public class Artist extends BaseObject implements Comparable<Artist> {
     public Artist(final EllaConnection ellaConnection, final String id,
             final String collection) {
         super(ellaConnection, id, collection);
-        this.method = "/artists/" + this.id + this.RESPONSE_TYPE;
+        this.method = "/artists/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"official_homepage_artist_url",
                 "wikipedia_artist_url", "lastfm_artist_url",
                 "myspace_artist_url", "spotify_artist_url", "itms_artist_url",
@@ -213,7 +201,7 @@ public class Artist extends BaseObject implements Comparable<Artist> {
             this.setDecades(this.getFieldValue("artist_decades1"),
                     this.getFieldValue("artist_decades2"));
         }
-        return this.decades;
+        return Arrays.copyOf(this.decades, this.decades.length);
     }
 
     /**
@@ -246,20 +234,14 @@ public class Artist extends BaseObject implements Comparable<Artist> {
             return this.tracks;
         }
         this.tracks = new ArrayList<Track>();
-        String mtd = "/artists/" + this.id + "/tracks" + this.RESPONSE_TYPE;
+        String mtd = "/artists/" + this.id + "/tracks"
+        + SearchObject.RESPONSE_TYPE;
         String trackMetadata = "track,artist_service_id,artist,"
             + "release_service_id,release,location,year,genre,"
             + "track_popularity,track_small_image,recommendable,"
             + "musicbrainz_track_id,spotify_track_uri,";
-        String[] trackMetadataLinks = new String[]{"spotify_track_url",
-                "grooveshark_track_url", "amazon_track_url", "itms_track_url",
-                "hypem_track_url", "musicbrainz_track_url"};
-        trackMetadata += Util.joinArray(trackMetadataLinks, ",");
-
-        HashMap<String, String> fetchMetadata = new HashMap<String, String>();
-        fetchMetadata.put("fetch_metadata", trackMetadata);
-        JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
-        JSONArray results = (JSONArray) response.get("results");
+        JSONArray results = (JSONArray) this.fetchTracks(trackMetadata,
+                this.collection, mtd);
         this.tracks = new TrackManager().getTracks(
                 this.request.getEllaConnection(), results, this);
         return this.tracks;
@@ -280,7 +262,7 @@ public class Artist extends BaseObject implements Comparable<Artist> {
         }
         this.similarArtists = new ArrayList<Object[]>();
         String mtd = "/artists/" + this.id + "/similar/artists"
-        + this.RESPONSE_TYPE;
+        + SearchObject.RESPONSE_TYPE;
         HashMap<String, String> fetchMetadata = new HashMap<String, String>();
         fetchMetadata.put("fetch_metadata", this.metadata);
         JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
@@ -373,8 +355,8 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * */
     public final ArrayList<Object[]> getTags()
     throws ServiceException, IOException {
-        return this.getTags(this.DEFAULT_TAG_TYPE,
-                this.DEFAULT_TAG_WEIGHT, this.DEFAULT_TAG_LIMIT);
+        return this.getTags(Jella.getDefaultTagType(),
+                Jella.getDefaultTagWeight(), Jella.getDefaultTagLimit());
     }
 
     /**
@@ -395,7 +377,7 @@ public class Artist extends BaseObject implements Comparable<Artist> {
         if (this.tags == null) {
             this.tags = new ArrayList<Object[]>();
             String mtd = "/artists/" + this.id
-            + "/similar/collections/tags/tags" + this.RESPONSE_TYPE;
+            + "/similar/collections/tags/tags" + SearchObject.RESPONSE_TYPE;
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("limit", Integer.toString(limit));
             params.put("filter", "tag_type:" + tagType);
@@ -421,7 +403,26 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * @param object An Artist instance to be compared.
      * @return The value of the string equals comparation between IDs.
      * */
-    public final boolean equals(final Artist object) {
-        return this.id.equals(object.id);
+    /**
+     * Checks if the IDs are the same.
+     * @param object An Album instance to be compared.
+     * @return The value of the string equals comparation between IDs.
+     * */
+    public final boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || this.getClass() != object.getClass()) {
+            return false;
+        }
+        Artist artist = (Artist) object;
+        return this.id.equals(artist.id);
+    }
+
+    /**
+     * Overrides Object hasCode.
+     * @return The hasCode of the ID.
+     * */
+    public final int hashCode() {
+        return this.id.hashCode();
     }
 }

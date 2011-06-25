@@ -3,9 +3,7 @@ package com.bmat.ella;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 /**
  * Java Class Album.
@@ -207,14 +205,8 @@ public class Album extends BaseObject implements Comparable<Album> {
             + "release_service_id,release,location,year,genre,"
             + "track_popularity,track_small_image,recommendable,"
             + "artist_decades1,artist_decades2,musicbrainz_track_id,";
-        String[] trackMetadataLinks = new String[]{"spotify_track_url",
-                "grooveshark_track_url", "amazon_track_url", "itms_track_url",
-                "hypem_track_url", "musicbrainz_track_url"};
-        trackMetadata += Util.joinArray(trackMetadataLinks, ",");
-        HashMap<String, String> fetchMetadata = new HashMap<String, String>();
-        fetchMetadata.put("fetch_metadata", trackMetadata);
-        JSONObject response = (JSONObject) this.request(mtd, fetchMetadata);
-        JSONArray results = (JSONArray) response.get("results");
+        JSONArray results = (JSONArray) this.fetchTracks(trackMetadata,
+                this.collection, mtd);
         this.tracks = new TrackManager().getTracks(
                 this.request.getEllaConnection(), results, this);
         return this.tracks;
@@ -234,7 +226,21 @@ public class Album extends BaseObject implements Comparable<Album> {
      * @param object An Album instance to be compared.
      * @return The value of the string equals comparation between IDs.
      * */
-    public final boolean equals(final Album object) {
-        return this.id.equals(object.id);
+    public final boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || this.getClass() != object.getClass()) {
+            return false;
+        }
+        Album album = (Album) object;
+        return this.id.equals(album.id);
+    }
+
+    /**
+     * Overrides Object hasCode.
+     * @return The hasCode of the ID.
+     * */
+    public final int hashCode() {
+        return this.id.hashCode();
     }
 }

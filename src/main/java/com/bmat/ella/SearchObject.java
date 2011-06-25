@@ -1,6 +1,7 @@
 package com.bmat.ella;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -8,7 +9,7 @@ import java.util.HashMap;
  * Represents a search object.
  * @author Harrington Joseph (Harph)
  * */
-public abstract class SearchObject {
+public class SearchObject {
     /**
      * Format of request response.
      * */
@@ -79,7 +80,10 @@ public abstract class SearchObject {
      * @return The search metadata links.
      * */
     public final String[] getMetadataLinks() {
-        return metadataLinks;
+        if (this.metadataLinks == null) {
+            return null;
+        }
+        return Arrays.copyOf(this.metadataLinks, this.metadataLinks.length);
     }
 
     /**
@@ -87,7 +91,12 @@ public abstract class SearchObject {
      * @param metadataLinkValues The metadata links.
      * */
     public final void setMetadataLinks(final String[] metadataLinkValues) {
-        this.metadataLinks = metadataLinkValues;
+        if (metadataLinkValues != null) {
+            this.metadataLinks = Arrays.copyOf(metadataLinkValues,
+                metadataLinkValues.length);
+        } else {
+            this.metadataLinks = null;
+        }
     }
 
     /**

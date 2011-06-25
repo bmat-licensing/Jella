@@ -41,7 +41,7 @@ public class Tag extends BaseObject implements Comparable<Tag> {
     public Tag(final EllaConnection ellaConnection, final String id,
             final String collection) {
         super(ellaConnection, id, collection);
-        this.method = "/tags/" + this.id + this.RESPONSE_TYPE;
+        this.method = "/tags/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadata = "_all";
     }
 
@@ -83,8 +83,8 @@ public class Tag extends BaseObject implements Comparable<Tag> {
     public final ArrayList<Artist> getSimilarArtists()
     throws ServiceException, IOException {
         return this.getSimilarArtists(
-                Jella.getDEFAULT_LIMIT(),
-                Jella.getDEFAULT_COLLECTION()
+                Jella.getDefaultLimit(),
+                Jella.getDefaultCollection()
         );
     }
 
@@ -118,7 +118,7 @@ public class Tag extends BaseObject implements Comparable<Tag> {
         }
 
         String mtd = "/tags/" + this.id + "/similar/collections/"
-        + collectionRef + "/artists" + this.RESPONSE_TYPE;
+        + collectionRef + "/artists" + SearchObject.RESPONSE_TYPE;
 
         JSONObject response = (JSONObject) this.request(mtd,
                 params);
@@ -140,9 +140,9 @@ public class Tag extends BaseObject implements Comparable<Tag> {
     public final ArrayList<Track> getSimilarTracks()
     throws ServiceException, IOException {
         return this.getSimilarTracks(
-                Jella.getDEFAULT_LIMIT(),
+                Jella.getDefaultLimit(),
                 null,
-                Jella.getDEFAULT_COLLECTION(),
+                Jella.getDefaultCollection(),
                 null,
                 true
         );
@@ -184,22 +184,13 @@ public class Tag extends BaseObject implements Comparable<Tag> {
         }
 
         params.put("seeds", this.collection + ":tag/" + this.id);
-        if (seeds != null) {
-            for (String key : seeds.keySet()) {
-                if (params.containsKey("seeds")) {
-                    params.put("seeds", params.get("seeds") + ","
-                            + seeds.get(key).get("collection") + ":"
-                            + seeds.get(key).get("entity") + "/" + key);
-                } else {
-                    params.put("seeds", seeds.get(key).get("collection") + ":"
-                            + seeds.get(key).get("entity") + "/" + key);
-                }
-            }
-        }
+
+        this.setParamsSeedsField(seeds, params);
+
         if (random) {
             params.put("similarity_type", "playlist");
         }
-        String mtd = "/tracks/similar_to" + this.RESPONSE_TYPE;
+        String mtd = "/tracks/similar_to" + SearchObject.RESPONSE_TYPE;
         String collectionRef = collectionSim;
         if (collectionRef == null) {
             collectionRef = this.collection;
@@ -226,7 +217,7 @@ public class Tag extends BaseObject implements Comparable<Tag> {
             this.similarTags = new ArrayList<Object[]>();
             String limit = "100";
             String mtd = "/tags/" + this.id
-            + "/similar/collections/tags/tags" + this.RESPONSE_TYPE;
+            + "/similar/collections/tags/tags" + SearchObject.RESPONSE_TYPE;
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("fetch_metadata", "tag_type");
             params.put("limit", limit);
@@ -252,7 +243,21 @@ public class Tag extends BaseObject implements Comparable<Tag> {
      * @param object An Tag instance to be compared.
      * @return The value of the string equals comparation between IDs.
      * */
-    public final boolean equals(final Tag object) {
-        return this.id.equals(object.id);
+    public final boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || this.getClass() != object.getClass()) {
+            return false;
+        }
+        Tag tag = (Tag) object;
+        return this.id.equals(tag.id);
+    }
+
+    /**
+     * Overrides Object hasCode.
+     * @return The hasCode of the ID.
+     * */
+    public final int hashCode() {
+        return this.id.hashCode();
     }
 }

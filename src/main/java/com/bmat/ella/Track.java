@@ -318,7 +318,7 @@ public class Track extends BaseObject implements Comparable<Track> {
      * */
     public final ArrayList<Track> getSimilarTracks()
     throws ServiceException, IOException {
-        return this.getSimilarTracks(Jella.getDEFAULT_LIMIT(),
+        return this.getSimilarTracks(Jella.getDefaultLimit(),
                 null, null, null, null, null);
     }
 
@@ -352,18 +352,7 @@ public class Track extends BaseObject implements Comparable<Track> {
             params.put("seeds", this.collection + ":track/" + this.id);
         }
 
-        if (seeds != null) {
-            for (String key : seeds.keySet()) {
-                if (params.containsKey("seeds")) {
-                    params.put("seeds", params.get("seeds") + ","
-                            + seeds.get(key).get("collection") + ":"
-                            + seeds.get(key).get("entity") + "/" + key);
-                } else {
-                    params.put("seeds", seeds.get(key).get("collection")
-                            + ":" + seeds.get(key).get("entity") + "/" + key);
-                }
-            }
-        }
+        this.setParamsSeedsField(seeds, params);
 
         if (similarityType != null) {
             params.put("similarity_type", similarityType);
@@ -373,7 +362,7 @@ public class Track extends BaseObject implements Comparable<Track> {
         if (collectionSim == null) {
             collectionRef = collectionSim;
         }
-        String mtd = "/tracks/similar_to" + this.RESPONSE_TYPE;
+        String mtd = "/tracks/similar_to" + SearchObject.RESPONSE_TYPE;
 
         if (!this.isRecommend()) {
             return null;
@@ -400,7 +389,21 @@ public class Track extends BaseObject implements Comparable<Track> {
      * @param object A Track instance to be compared.
      * @return The value of the string equals comparation between IDs.
      * */
-    public final boolean equals(final Track object) {
-        return this.id.equals(object.id);
+    public final boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || this.getClass() != object.getClass()) {
+            return false;
+        }
+        Track track = (Track) object;
+        return this.id.equals(track.id);
+    }
+
+    /**
+     * Overrides Object hasCode.
+     * @return The hasCode of the ID.
+     * */
+    public final int hashCode() {
+        return this.id.hashCode();
     }
 }

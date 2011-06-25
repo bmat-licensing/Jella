@@ -44,7 +44,7 @@ public class TagSearch extends Search {
             searchTerms.put("limit", "30");
             searchTerms.put("fuzzy", "True");
         }
-        this.method = mtd + this.RESPONSE_TYPE;
+        this.method = mtd + SearchObject.RESPONSE_TYPE;
     }
 
     /**

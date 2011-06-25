@@ -65,7 +65,7 @@ public class ArtistSearch extends Search {
             searchTerms.put("fuzzy", "true");
         }
         searchTerms.put("fetch_metadata", this.metadata);
-        this.method = mtd + this.RESPONSE_TYPE;
+        this.method = mtd + SearchObject.RESPONSE_TYPE;
     }
 
     /**

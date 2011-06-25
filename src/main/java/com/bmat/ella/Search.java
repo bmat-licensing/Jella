@@ -4,6 +4,8 @@ package com.bmat.ella;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -81,7 +83,7 @@ public abstract class Search extends SearchObject {
         if (this.method.indexOf("resolve") == -1) {
             long offset = 0;
             if (pageIndex != 0) {
-                offset = Jella.getRESULTS_PER_PAGE() * pageIndex;
+                offset = Jella.getResultsPerPage() * pageIndex;
             }
             params.put("offset", Long.toString(offset));
         }
@@ -111,6 +113,7 @@ public abstract class Search extends SearchObject {
      * connection to Ella WS.
      * @throws ServiceException When Ella WS response fails.
      * */
+    @SuppressWarnings("unchecked")
     protected final long getTotalResultCount()
     throws ServiceException, IOException {
         if (this.hits != null) {
@@ -132,8 +135,10 @@ public abstract class Search extends SearchObject {
         } else {
             totalHits = 0;
             JSONObject jsonHits = (JSONObject) stats.get("total_hits");
-            for (Object key : jsonHits.keySet()) {
-                totalHits += new Long(jsonHits.get(key.toString()).toString());
+            for (Map.Entry<String, Object> obj
+                    : (Set<Map.Entry<String, Object>>) jsonHits.entrySet()) {
+                totalHits += new Long(jsonHits.get(
+                        obj.getValue().toString()).toString());
             }
         }
         this.hits = totalHits;
