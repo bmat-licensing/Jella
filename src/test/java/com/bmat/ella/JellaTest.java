@@ -44,8 +44,16 @@ public class JellaTest {
     @After public void tearDown() {
         // nothing to tear down
     }
-    
-    
+
+    /**
+     * Test Jella Util class.
+     * */
+    @Test public void  testUtils() {
+        String text = "this that these those";
+        String[] elements = text.split(" ");
+        assertTrue(Util.joinArray(elements, " ").equals(text));
+    }
+
     /**
      * Test Jella search track functions.
      * @throws IOException When there is a problem with the
@@ -66,6 +74,7 @@ public class JellaTest {
             assertTrue(track.getArtist().getName().toLowerCase().indexOf(artist1.toLowerCase()) != -1);
             assertTrue(track.getTitle().toLowerCase().indexOf(query1.toLowerCase()) != -1);
             assertTrue(track.getCollection().equalsIgnoreCase(collection1));
+            assertNotNull(track.getMetadataLinks());
         }
         // TEST 2 - match
         String collection2 = "bmat";
@@ -85,6 +94,7 @@ public class JellaTest {
             assertTrue(track.getTitle().toLowerCase().indexOf(query.get("track").toString().toLowerCase()) != -1);
             assertTrue(track.getArtist().getName().toLowerCase().indexOf(query.get("artist").toString().toLowerCase()) != -1);
             assertTrue(track.getCollection().equalsIgnoreCase(collection3));
+            assertNotNull(track.getMetadataLinks());
         }
         // TEST 4 - search
         String artist4 = "faith";
@@ -92,6 +102,7 @@ public class JellaTest {
         assertTrue(trackSearch4.getTotalResultCount() > 0);
         for (Track track : trackSearch4.getNextPage()) {
             assertTrue(track.getArtistName().toLowerCase().indexOf(artist4) != -1);
+            assertNotNull(track.getMetadataLinks());
         }
         
     }
@@ -101,12 +112,24 @@ public class JellaTest {
      * */
     @Test public void  testTrack() {
         Track track = new Track(jella.getEllaConnection(), "9dd6f275-81f4-4b4d-9277-41dfb1dad7a7", "bmat");
-        assertTrue(track.getTitle().equalsIgnoreCase("californication"));
-        assertTrue(track.getArtist().getName().equalsIgnoreCase("Red Hot Chili Peppers"));
-        assertTrue(track.getArtistName().equalsIgnoreCase(track.getArtist().getName()));
-        assertTrue(track.getAlbumTitle().equalsIgnoreCase("Californication"));
+        assertTrue(track.getAlbumId().equals("d8c97ca3-3faa-4423-8c0f-61e2bb849066"));
+        assertTrue(track.getAlbumTitle().equals("Californication"));
+        assertNotNull(track.getAlbum());
+        assertTrue(track.getArtistId().equals("85d09256-df5c-4af8-acfa-858df367b0a9"));
+        assertTrue(track.getArtistName().equals("Red Hot Chili Peppers"));
+        assertNotNull(track.getArtist());
+        assertTrue(track.getAudio().equals("http://audio.bmat.com/audio/8/r/e/red_hot_chili_peppers/californication/californication.mp3"));
+        assertTrue(track.getCollection().equals("bmat"));
+        assertTrue(track.getFullTitle().equals("Red Hot Chili Peppers - Californication"));
+        assertTrue(track.getId().equals("9dd6f275-81f4-4b4d-9277-41dfb1dad7a7"));
+        assertNotNull(track.getImages());
+        assertNotNull(track.getJson());
         assertNotNull(track.getLinks());
-
+        assertTrue(track.getMbid().equals("084a24a9-b289-4584-9fb5-1ca0f7500eb3"));
+        assertNotNull(track.getMetadata());
+        assertNotNull(track.getMetadataLinks());
+        assertTrue(track.getMethod().equals("/tracks/9dd6f275-81f4-4b4d-9277-41dfb1dad7a7.json"));
+        assertTrue(track.getPopularity() > 0);
     }
 
     /**
@@ -165,6 +188,13 @@ public class JellaTest {
         String collection2 = "bmat";
         ArtistSearch artistSearch2 = jella.searchArtists(query2, collection2, true, null);
         assertTrue(artistSearch2.getTotalResultCount() > 0);
+        assertTrue(artistSearch2.getPage(-1).size() > 0);
+        
+        // TEST 3 - resolve
+        String artist3 = "Read Hot Chili Peppers";
+        ArtistSearch artistSearch3 = new ArtistSearch(jella.getEllaConnection(), "resolve", artist3, "bmat", false, 0.4);
+        assertTrue(artistSearch3.getTotalResultCount() > 0);
+        assertTrue(artistSearch3.getPage(1).size() > 0);
     }
 
     /**
@@ -172,13 +202,22 @@ public class JellaTest {
      * */
     @Test public void  testArtist() {
         Artist artist = new Artist(jella.getEllaConnection(), "0b7c17b1-02e0-49fa-84b4-af3c08362a19", "bmat");
-        assertTrue(artist.getName().equalsIgnoreCase("The White Stripes"));
-        assertTrue(artist.getLocation().equalsIgnoreCase("Detroit, Michigan, US"));
-        String[] decades = artist.getDecades();
-        assertTrue(decades[0].equals("1997"));
-        assertTrue(decades[1].equals("2011"));
+        assertTrue(artist.getCollection().equals("bmat"));
+        assertTrue(artist.getDecades()[0].equals("1997"));
+        assertTrue(artist.getDecades()[1].equals("2011"));
+        assertTrue(artist.getId().equals("0b7c17b1-02e0-49fa-84b4-af3c08362a19"));
+        assertTrue(artist.getLat() == 42.331427);
         assertNotNull(artist.getLatlng());
         assertNotNull(artist.getLinks());
+        assertTrue(artist.getLng() == -83.045754);
+        assertTrue(artist.getLocation().equalsIgnoreCase("Detroit, Michigan, US"));
+        assertTrue(artist.getMbid().equals("11ae9fbb-f3d7-4a47-936f-4c0a04d3b3b5"));
+        assertNotNull(artist.getMetadata());
+        assertNotNull(artist.getMetadataLinks());
+        assertTrue(artist.getMethod().equals("/artists/0b7c17b1-02e0-49fa-84b4-af3c08362a19.json"));
+        assertTrue(artist.getName().equals("The White Stripes"));
+        assertTrue(artist.getPopularity() > 0);
+        assertNotNull(artist.getJson());
     }
     
     /**
@@ -247,12 +286,21 @@ public class JellaTest {
      * */
     @Test public void  testAlbum() {
         Album album = new Album(jella.getEllaConnection(), "2eb3b186-121f-4eaf-9ad6-f0f7730b57eb", "bmat");
-        assertNotNull(album.getId());
-        assertNotNull(album.getMbid());
-        assertTrue(album.getTitle().equalsIgnoreCase("Conquest"));
-        assertTrue(album.getArtist().getName().equalsIgnoreCase("the white stripes"));
-        assertNotNull(album.getLinks());
+        assertNotNull(album.getArtist());
+        assertTrue(album.getArtist().getName().equals("The White Stripes"));
+        assertTrue(album.getCollection().equals("bmat"));
+        assertTrue(album.getId().equals("2eb3b186-121f-4eaf-9ad6-f0f7730b57eb"));
+        assertNotNull(album.getImages());
+        assertTrue(album.getImages().size() > 0);
+        assertNotNull(album.getJson());
         assertNotNull(album.getLabels());
+        assertTrue(album.getLabels().size() > 0);
+        assertNotNull(album.getLinks());
+        assertTrue(album.getMbid().equals("4ca09b82-fbf2-4316-a45b-c11c60b46195"));
+        assertNotNull(album.getMetadata());
+        assertNotNull(album.getMetadataLinks());
+        assertTrue(album.getMethod().equals("/releases/2eb3b186-121f-4eaf-9ad6-f0f7730b57eb.json"));
+        assertTrue(album.getTitle().equals("Conquest"));
     }
 
     /**
@@ -296,6 +344,21 @@ public class JellaTest {
         String collection2 = "tags";
         TagSearch tagSearch2 = jella.searchTags("happy", collection2, true);
         assertTrue(tagSearch2.getTotalResultCount() > 0);
+        assertTrue(tagSearch2.getPage(-1).size() > 0);
+        assertTrue(tagSearch2.getPage(1).size() > 0);
+    }
+
+    /**
+     * Test Jella Tag Object and Metadata functions.
+     * */
+    @Test public void  testTag() {
+        Tag tag = new Tag(jella.getEllaConnection(), "happy", "tags");
+        assertTrue(tag.getCollection().equals("tags"));
+        assertTrue(tag.getId().equals("happy"));
+        assertTrue(tag.getName().equals("happy"));
+        assertNotNull(tag.getMetadata());
+        assertNull(tag.getLinks());
+        assertNull(tag.getMetadataLinks());
     }
 
     /**
@@ -388,6 +451,8 @@ public class JellaTest {
         Album album3 = new Album(jella.getEllaConnection(), thinkTankId, "bmat");
         assertTrue(album1.equals(album2));
         assertFalse(album1.equals(album3));
+        assertFalse(album1.equals(null));
+        assertFalse(album1.equals("test"));
     }
 
     /**
@@ -421,6 +486,8 @@ public class JellaTest {
         Artist artist3 = new Artist(jella.getEllaConnection(), jetId, "bmat");
         assertTrue(artist1.equals(artist2));
         assertFalse(artist1.equals(artist3));
+        assertFalse(artist1.equals(null));
+        assertFalse(artist1.equals("test"));
     }
 
     /**
@@ -448,6 +515,8 @@ public class JellaTest {
         Tag tag3 = new Tag(jella.getEllaConnection(), "sad", "tags");
         assertTrue(tag1.equals(tag2));
         assertFalse(tag1.equals(tag3));
+        assertFalse(tag1.equals(null));
+        assertFalse(tag1.equals("test"));
     }
 
     /**
@@ -481,5 +550,91 @@ public class JellaTest {
         Track track3 = new Track(jella.getEllaConnection(), areYouGonnaBeMyGirl, "bmat");
         assertTrue(track1.equals(track2));
         assertFalse(track1.equals(track3));
+        assertFalse(track1.equals(null));
+        assertFalse(track1.equals("test"));
     }
+    
+    /**
+     * Test Jella for Request.
+     * @throws IOException When connection fails.
+     * @throws ServiceException When a problems occurs with the WS.
+     * */
+    @Test public void testRequest() throws ServiceException, IOException {
+        Request request = new Request(jella.getEllaConnection());
+        assertNotNull(request.execute("/tracks/19d4904c-f2f2-4a95-887c-7e5ddd3fb358.json", "bmat", null));
+    }
+    
+    /**
+     * Test Jella for ServiceException.
+     * @throws IOException When connection fails.
+     * @throws ServiceException When a problems occurs with the WS.
+     * */
+    @Test (expected = ServiceException.class) 
+    public void testServiceException() throws ServiceException, IOException {
+        Request request = new Request(jella.getEllaConnection());
+        try {
+            request.execute("search.json", "bmat", null);
+        } catch (ServiceException e) {
+            assertTrue(e.getType().equals("ella.core.errors.NotFound"));
+            assertNotNull(e.getMessage());
+            assertNotNull(e.toString());
+            throw e;
+        }
+    }
+    
+    /**
+     * Test Jella Default attributes.
+     * */
+    @Test public void testDefault() {
+        // Defaults
+        Jella myJella = new Jella("", "", "");
+        boolean cacheEnable = Jella.isCacheEnable();
+        String defaultCollection = Jella.getDefaultCollection();
+        long defaultLimit = Jella.getDefaultLimit();
+        int defaultTagLimit = Jella.getDefaultTagLimit();
+        String defaultTagType = Jella.getDefaultTagType();
+        double defaultTagWeight = Jella.getDefaultTagWeight();
+        String jellaCacheDir = Jella.getJellaCacheDir();
+        int resultsPerPage = Jella.getResultsPerPage();
+
+        // Sets
+        boolean setCacheEnable = false;
+        String setDefaultCollection = "myCollection";
+        long setDefaultLimit = 200;
+        int setDefaultTagLimit = 10;
+        String setDefaultTagType = "myType";
+        double setDefaultTagWeight = 30;
+        String setJellaCacheDir = "../";
+        int setResultsPerPage = 20;
+
+        Jella.setCacheEnablet(setCacheEnable);
+        Jella.setDefaultCollection(setDefaultCollection);
+        Jella.setDefaultLimit(setDefaultLimit);
+        Jella.setDefaultTagLimit(setDefaultTagLimit);
+        Jella.setDefaultTagType(setDefaultTagType);
+        Jella.setDefaultTagWeight(setDefaultTagWeight);
+        Jella.setJellaCacheDir(setJellaCacheDir);
+        Jella.setResultsPerPage(setResultsPerPage);
+
+        // Asserts
+        assertTrue(Jella.isCacheEnable() == setCacheEnable);
+        assertTrue(Jella.getDefaultCollection().equals(setDefaultCollection));
+        assertTrue(Jella.getDefaultLimit() == setDefaultLimit);
+        assertTrue(Jella.getDefaultTagLimit() == setDefaultTagLimit);
+        assertTrue(Jella.getDefaultTagType().equals(setDefaultTagType));
+        assertTrue(Jella.getDefaultTagWeight() == setDefaultTagWeight);
+        assertTrue(Jella.getJellaCacheDir().equals(setJellaCacheDir));
+        assertTrue(Jella.getResultsPerPage() == setResultsPerPage);
+
+        // Resetting
+        Jella.setCacheEnablet(cacheEnable);
+        Jella.setDefaultCollection(defaultCollection);
+        Jella.setDefaultLimit(defaultLimit);
+        Jella.setDefaultTagLimit(defaultTagLimit);
+        Jella.setDefaultTagType(defaultTagType);
+        Jella.setDefaultTagWeight(defaultTagWeight);
+        Jella.setJellaCacheDir(jellaCacheDir);
+        Jella.setResultsPerPage(resultsPerPage);
+    }
+    
 }
