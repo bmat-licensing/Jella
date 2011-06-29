@@ -36,14 +36,37 @@ public class Request {
      * An instance of JSONParser.
      * */
     private JSONParser jsonParser;
+    /**
+     * Specifies if the cache enabled.
+     * */
+    private boolean cacheEnable;
+    /**
+     * Path to Jella cache directory.
+     * */
+    private String jellaCacheDir;
 
     /**
      * Class constructor.
      * @param ellaConnectionValue A connection to the Ella web service.
      * */
     public Request(final EllaConnection ellaConnectionValue) {
+        this(ellaConnectionValue, Jella.JELLA_CACHE_DIR, Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnectionValue A connection to the Ella web service.
+     * @param jellaCacheDirValue The path to the cache directory.
+     * @param cacheEnabledValue A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public Request(final EllaConnection ellaConnectionValue,
+            final String jellaCacheDirValue,
+            final boolean cacheEnabledValue) {
         this.ellaConnection = ellaConnectionValue;
         this.jsonParser = new JSONParser();
+        this.jellaCacheDir = jellaCacheDirValue;
+        this.cacheEnable = cacheEnabledValue;
     }
 
     /**
@@ -78,7 +101,7 @@ public class Request {
             final boolean cacheable)throws ServiceException, IOException {
         try {
             JSONObject jsonObj;
-            if (Jella.isCacheEnable() && cacheable) {
+            if (this.cacheEnable && cacheable) {
                 String cacheKey = this.getCacheKey(searchTerms, method,
                         collection);
                 jsonObj = (JSONObject) this.jsonParser.parse(
@@ -142,7 +165,7 @@ public class Request {
                     new InputStreamReader(urlCon.getErrorStream()));
             error = true;
         }
-        String inputLine, jsonResponseStr; 
+        String inputLine, jsonResponseStr;
         StringBuffer jsonResponse = new StringBuffer();
         while ((inputLine = bufferedReader.readLine()) != null) {
             jsonResponse.append(inputLine);
@@ -150,7 +173,7 @@ public class Request {
         bufferedReader.close();
         jsonResponseStr = jsonResponse.toString();
 //        System.out.println("JSON RESPONSE: " + jsonResponse);
-        if (!error && Jella.isCacheEnable()) {
+        if (!error && this.cacheEnable) {
             FileWriter cacheFile = null;
             try {
                 String cacheKey = this.getCacheKey(
@@ -189,7 +212,7 @@ public class Request {
             StringBuffer jsonResponse = new StringBuffer();
             BufferedReader reader = new BufferedReader(
                     new FileReader(
-                            new File(Jella.getJellaCacheDir(), cacheKey)));
+                            new File(this.jellaCacheDir, cacheKey)));
             String line;
             while ((line = reader.readLine()) != null) {
                 jsonResponse.append(line);
@@ -247,7 +270,7 @@ public class Request {
         if (cacheKey == null) {
             return false;
         }
-        return (new File(Jella.getJellaCacheDir(), cacheKey)).exists();
+        return (new File(this.jellaCacheDir, cacheKey)).exists();
     }
 
     /**
@@ -272,10 +295,40 @@ public class Request {
      * It creates the directory if it does not exist.
      * */
     private String getCacheDir() {
-        File directory = new File(Jella.getJellaCacheDir());
+        File directory = new File(this.jellaCacheDir);
         if (!directory.exists() && !directory.mkdir()) {
             return null;
         }
-        return Jella.getJellaCacheDir();
+        return this.jellaCacheDir;
+    }
+
+    /**
+     * @return The value of cacheEnable.
+     * */
+    public final boolean isCacheEnable() {
+        return this.cacheEnable;
+    }
+
+    /**
+     * Modifies the cacheEnable value.
+     * @param cacheEnableValue The value of cacheEnable.
+     * */
+    public final void setCacheEnable(final boolean cacheEnableValue) {
+        this.cacheEnable = cacheEnableValue;
+    }
+
+    /**
+     * @return The path to the cache directory.
+     * */
+    public final String getJellaCacheDir() {
+        return this.jellaCacheDir;
+    }
+
+    /**
+     * Modifies the path of the cache directory.
+     * @param jellaCacheDirValue The path of the cache directory.
+     * */
+    public final void setJellaCacheDir(final String jellaCacheDirValue) {
+        this.jellaCacheDir = jellaCacheDirValue;
     }
 }

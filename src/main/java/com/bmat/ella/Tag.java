@@ -31,6 +31,14 @@ public class Tag extends BaseObject implements Comparable<Tag> {
      * score (Double) in position '0' and tag ID (String) in position '1'.
      * */
     private ArrayList<Object[]> similarTags;
+    /**
+     * Default collection name.
+     * */
+    private String defaultCollection;
+    /**
+     * Default max number of results.
+     * */
+    private long defaultLimit;
 
     /**
      * Class constructor.
@@ -40,9 +48,33 @@ public class Tag extends BaseObject implements Comparable<Tag> {
      * */
     public Tag(final EllaConnection ellaConnection, final String id,
             final String collection) {
-        super(ellaConnection, id, collection);
+        this(ellaConnection, id, collection, Jella.DEFAULT_COLLECTION,
+                Jella.DEFAULT_LIMIT, Jella.JELLA_CACHE_DIR,
+                Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id The id of the tag.
+     * @param collection The collection name of the tag.
+     * @param defaultCollectionValue Default collection name to search.
+     * @param defaultLimitValue max number of results.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public Tag(final EllaConnection ellaConnection, final String id,
+            final String collection,
+            final String defaultCollectionValue,
+            final long defaultLimitValue,
+            final String jellaCacheDir,
+            final boolean cacheEnable) {
+        super(ellaConnection, id, collection, jellaCacheDir, cacheEnable);
         this.method = "/tags/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadata = "_all";
+        this.defaultCollection = defaultCollectionValue;
+        this.defaultLimit = defaultLimitValue;
     }
 
     /**
@@ -83,8 +115,8 @@ public class Tag extends BaseObject implements Comparable<Tag> {
     public final ArrayList<Artist> getSimilarArtists()
     throws ServiceException, IOException {
         return this.getSimilarArtists(
-                Jella.getDefaultLimit(),
-                Jella.getDefaultCollection()
+                this.defaultLimit,
+                this.defaultCollection
         );
     }
 
@@ -140,9 +172,9 @@ public class Tag extends BaseObject implements Comparable<Tag> {
     public final ArrayList<Track> getSimilarTracks()
     throws ServiceException, IOException {
         return this.getSimilarTracks(
-                Jella.getDefaultLimit(),
+                this.defaultLimit,
                 null,
-                Jella.getDefaultCollection(),
+                this.defaultCollection,
                 null,
                 true
         );
@@ -259,5 +291,36 @@ public class Tag extends BaseObject implements Comparable<Tag> {
      * */
     public final int hashCode() {
         return this.id.hashCode();
+    }
+
+    /**
+     * @return The value of defaultLimit.
+     * */
+    public final long getDefaultLimit() {
+        return this.defaultLimit;
+    }
+
+    /**
+     * Modifies the defaultLimit value.
+     * @param defaultLimitValue The value of defaultLimit.
+     * */
+    public final void setDefaultLimit(final long defaultLimitValue) {
+        this.defaultLimit = defaultLimitValue;
+    }
+
+    /**
+     * @return The name of defaultCollection.
+     * */
+    public final String getDefaultCollection() {
+        return this.defaultCollection;
+    }
+
+    /**
+     * Modifies the defaultCollection name.
+     * @param defaultCollectionValue The name of defaultCollection.
+     * */
+    public final void setDefaultCollection(
+            final String defaultCollectionValue) {
+        this.defaultCollection = defaultCollectionValue;
     }
 }

@@ -40,7 +40,24 @@ public class Album extends BaseObject implements Comparable<Album> {
      * */
     public Album(final EllaConnection ellaConnection,
             final String id, final String collection) {
-        super(ellaConnection, id, collection);
+        this(ellaConnection, id, collection, Jella.JELLA_CACHE_DIR,
+                Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id The id of the album.
+     * @param collection The collection name of the album.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public Album(final EllaConnection ellaConnection,
+            final String id, final String collection,
+            final String jellaCacheDir,
+            final boolean cacheEnable) {
+        super(ellaConnection, id, collection, jellaCacheDir, cacheEnable);
         this.method = "/releases/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"spotify_release_url",
                 "amazon_release_url", "itms_release_url",

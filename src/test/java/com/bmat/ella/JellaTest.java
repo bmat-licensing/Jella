@@ -586,17 +586,7 @@ public class JellaTest {
      * Test Jella Default attributes.
      * */
     @Test public void testDefault() {
-        // Defaults
         Jella myJella = new Jella("", "", "");
-        boolean cacheEnable = Jella.isCacheEnable();
-        String defaultCollection = Jella.getDefaultCollection();
-        long defaultLimit = Jella.getDefaultLimit();
-        int defaultTagLimit = Jella.getDefaultTagLimit();
-        String defaultTagType = Jella.getDefaultTagType();
-        double defaultTagWeight = Jella.getDefaultTagWeight();
-        String jellaCacheDir = Jella.getJellaCacheDir();
-        int resultsPerPage = Jella.getResultsPerPage();
-
         // Sets
         boolean setCacheEnable = false;
         String setDefaultCollection = "myCollection";
@@ -607,34 +597,24 @@ public class JellaTest {
         String setJellaCacheDir = "../";
         int setResultsPerPage = 20;
 
-        Jella.setCacheEnablet(setCacheEnable);
-        Jella.setDefaultCollection(setDefaultCollection);
-        Jella.setDefaultLimit(setDefaultLimit);
-        Jella.setDefaultTagLimit(setDefaultTagLimit);
-        Jella.setDefaultTagType(setDefaultTagType);
-        Jella.setDefaultTagWeight(setDefaultTagWeight);
-        Jella.setJellaCacheDir(setJellaCacheDir);
-        Jella.setResultsPerPage(setResultsPerPage);
+        myJella.setCacheEnablet(setCacheEnable);
+        myJella.setDefaultCollection(setDefaultCollection);
+        myJella.setDefaultLimit(setDefaultLimit);
+        myJella.setDefaultTagLimit(setDefaultTagLimit);
+        myJella.setDefaultTagType(setDefaultTagType);
+        myJella.setDefaultTagWeight(setDefaultTagWeight);
+        myJella.setJellaCacheDir(setJellaCacheDir);
+        myJella.setResultsPerPage(setResultsPerPage);
 
         // Asserts
-        assertTrue(Jella.isCacheEnable() == setCacheEnable);
-        assertTrue(Jella.getDefaultCollection().equals(setDefaultCollection));
-        assertTrue(Jella.getDefaultLimit() == setDefaultLimit);
-        assertTrue(Jella.getDefaultTagLimit() == setDefaultTagLimit);
-        assertTrue(Jella.getDefaultTagType().equals(setDefaultTagType));
-        assertTrue(Jella.getDefaultTagWeight() == setDefaultTagWeight);
-        assertTrue(Jella.getJellaCacheDir().equals(setJellaCacheDir));
-        assertTrue(Jella.getResultsPerPage() == setResultsPerPage);
-
-        // Resetting
-        Jella.setCacheEnablet(cacheEnable);
-        Jella.setDefaultCollection(defaultCollection);
-        Jella.setDefaultLimit(defaultLimit);
-        Jella.setDefaultTagLimit(defaultTagLimit);
-        Jella.setDefaultTagType(defaultTagType);
-        Jella.setDefaultTagWeight(defaultTagWeight);
-        Jella.setJellaCacheDir(jellaCacheDir);
-        Jella.setResultsPerPage(resultsPerPage);
+        assertTrue(myJella.isCacheEnable() == setCacheEnable);
+        assertTrue(myJella.getDefaultCollection().equals(setDefaultCollection));
+        assertTrue(myJella.getDefaultLimit() == setDefaultLimit);
+        assertTrue(myJella.getDefaultTagLimit() == setDefaultTagLimit);
+        assertTrue(myJella.getDefaultTagType().equals(setDefaultTagType));
+        assertTrue(myJella.getDefaultTagWeight() == setDefaultTagWeight);
+        assertTrue(myJella.getJellaCacheDir().equals(setJellaCacheDir));
+        assertTrue(myJella.getResultsPerPage() == setResultsPerPage);
     }
     
 }

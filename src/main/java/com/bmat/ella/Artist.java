@@ -55,6 +55,18 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * score (Double) in position '0' and tag ID (String) in position '1'.
      * */
     private ArrayList<Object[]> tags;
+    /**
+     * Default max number of tag results.
+     * */
+    private int defaultTagLimit;
+    /**
+     * Default tag type.
+     * */
+    private String defaultTagType;
+    /**
+     * Default tag weight.
+     * */
+    private double defaultTagWeight;
 
     /**
      * Class constructor.
@@ -64,7 +76,30 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * */
     public Artist(final EllaConnection ellaConnection, final String id,
             final String collection) {
-        super(ellaConnection, id, collection);
+        this(ellaConnection, id, collection, Jella.DEFAULT_TAG_TYPE,
+                Jella.DEFAULT_TAG_WEIGHT, Jella.DEFAULT_TAG_LIMIT,
+                Jella.JELLA_CACHE_DIR, Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id Artist id.
+     * @param collection The collection name of the artist.
+     * @param defaultTagTypeValue The default tag type.
+     * @param defaultTagWeightValue The lowest tag weight allowed.
+     * @param defaultTagLimitValue Max number of that tags to find.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public Artist(final EllaConnection ellaConnection, final String id,
+            final String collection, final String defaultTagTypeValue,
+            final double defaultTagWeightValue,
+            final int defaultTagLimitValue,
+            final String jellaCacheDir,
+            final boolean cacheEnable) {
+        super(ellaConnection, id, collection, jellaCacheDir, cacheEnable);
         this.method = "/artists/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"official_homepage_artist_url",
                 "wikipedia_artist_url", "lastfm_artist_url",
@@ -74,6 +109,9 @@ public class Artist extends BaseObject implements Comparable<Artist> {
             + "recommendable,artist_decades1,artist_decades2,artist_latlng,"
             + "musicbrainz_artist_id,";
         this.metadata += Util.joinArray(this.metadataLinks, ",");
+        this.defaultTagType = defaultTagTypeValue;
+        this.defaultTagLimit = defaultTagLimitValue;
+        this.defaultTagWeight = defaultTagWeightValue;
     }
 
     /**
@@ -355,8 +393,8 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * */
     public final ArrayList<Object[]> getTags()
     throws ServiceException, IOException {
-        return this.getTags(Jella.getDefaultTagType(),
-                Jella.getDefaultTagWeight(), Jella.getDefaultTagLimit());
+        return this.getTags(this.defaultTagType,
+                this.defaultTagWeight, this.defaultTagLimit);
     }
 
     /**
@@ -424,5 +462,50 @@ public class Artist extends BaseObject implements Comparable<Artist> {
      * */
     public final int hashCode() {
         return this.id.hashCode();
+    }
+
+    /**
+     * @return The value of the defaultTagLimit.
+     * */
+    public final int getDefaultTagLimit() {
+        return this.defaultTagLimit;
+    }
+
+    /**
+     * Modifies the defaultTagLimit value.
+     * @param defaultTagLimitValue The value of defaultTagLimit.
+     * */
+    public final void setDefaultTagLimit(final int defaultTagLimitValue) {
+        this.defaultTagLimit = defaultTagLimitValue;
+    }
+
+    /**
+     * @return The value of defaultTagType.
+     * */
+    public final String getDefaultTagType() {
+        return this.defaultTagType;
+    }
+
+    /**
+     * Modifies the defaultTagType value.
+     * @param defaultTagTypeValue The value of defaultTagType.
+     * */
+    public final void setDefaultTagType(final String defaultTagTypeValue) {
+        this.defaultTagType = defaultTagTypeValue;
+    }
+
+    /**
+     * @return The value of defaultTagWeight.
+     * */
+    public final double getDefaultTagWeight() {
+        return this.defaultTagWeight;
+    }
+
+    /**
+     * Modifies the defaultTagWeight value.
+     * @param defaultTagWeightValue The value of defaultTagWeight.
+     * */
+    public final void setDefaultTagWeight(final double defaultTagWeightValue) {
+        this.defaultTagWeight = defaultTagWeightValue;
     }
 }

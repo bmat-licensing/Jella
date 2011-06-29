@@ -12,41 +12,81 @@ public class Jella {
      * */
     private EllaConnection ellaConnection;
     /**
+     * Constant.
      * Total number of results per page.
      * Default value 10.
      * */
-    private static int RESULTS_PER_PAGE = 10;
+    public static final int RESULTS_PER_PAGE = 10;
     /**
+     * Total number of results per page.
+     * */
+    private int resultsPerPage;
+    /**
+     * Constant.
      * Default max number of results.
      * Default value 20.
      * */
-    private static long DEFAULT_LIMIT = 20;
+    public static final long DEFAULT_LIMIT = 20;
     /**
+     * Default max number of results.
+     * */
+    private long defaultLimit;
+    /**
+     * Constant.
      * Default collection name.
      * Defautl name "bmat".
      * */
-    private static String DEFAULT_COLLECTION = "bmat";
+    public static final String DEFAULT_COLLECTION = "bmat";
     /**
+     * Default collection name.
+     * */
+    private String defaultCollection;
+    /**
+     * Constant.
      * Path to Jella cache directory.
      * Default path "../JELLA_CACHE_DIR".
      * */
-    private static String JELLA_CACHE_DIR = "../JELLA_CACHE_DIR";
+    public static final String JELLA_CACHE_DIR = "../JELLA_CACHE_DIR";
+    /**
+     * Path to Jella cache directory.
+     * */
+    private String jellaCacheDir;
+    /**
+     * Constant.
+     * Default max number of tag results.
+     * */
+    public static final int DEFAULT_TAG_LIMIT = 4;
     /**
      * Default max number of tag results.
      * */
-    private static int DEFAULT_TAG_LIMIT = 4;
+    private int defaultTagLimit;
+    /**
+     * Constant.
+     * Default tag type.
+     * */
+    public static final String DEFAULT_TAG_TYPE = "style";
     /**
      * Default tag type.
      * */
-    private static String DEFAULT_TAG_TYPE = "style";
+    private String defaultTagType;
+    /**
+     * Constant.
+     * Default tag weight.
+     * */
+    public static final double DEFAULT_TAG_WEIGHT = 0.70;
     /**
      * Default tag weight.
      * */
-    private static double DEFAULT_TAG_WEIGHT = 0.70;
+    private double defaultTagWeight;
+    /**
+     * Constant.
+     * Specifies if the cache enabled.
+     * */
+    public static final boolean CACHE_ENABLE = true;
     /**
      * Specifies if the cache enabled.
      * */
-    private static boolean CACHE_ENABLE = true;
+    private boolean cacheEnable;
 
     /**
      * Class constructor.
@@ -57,6 +97,14 @@ public class Jella {
     public Jella(final String ellawsURL, final String username,
             final String password) {
         this.ellaConnection = new EllaConnection(ellawsURL, username, password);
+        this.resultsPerPage = Jella.RESULTS_PER_PAGE;
+        this.defaultLimit = Jella.DEFAULT_LIMIT;
+        this.defaultCollection = Jella.DEFAULT_COLLECTION;
+        this.jellaCacheDir = Jella.JELLA_CACHE_DIR;
+        this.defaultTagLimit = Jella.DEFAULT_TAG_LIMIT;
+        this.defaultTagType = Jella.DEFAULT_TAG_TYPE;
+        this.defaultTagWeight = Jella.DEFAULT_TAG_WEIGHT;
+        this.cacheEnable = Jella.CACHE_ENABLE;
     }
 
     /**
@@ -76,123 +124,124 @@ public class Jella {
     }
 
     /**
-     * @return The value of the constant RESULTS_PER_PAGE.
+     * @return The value of resultsPerPage.
      * */
-    public static int getResultsPerPage() {
-        return RESULTS_PER_PAGE;
+    public final int getResultsPerPage() {
+        return this.resultsPerPage;
     }
 
     /**
-     * Modifies the RESULTS_PER_PAGE value.
-     * @param resultsPerPage The value of RESULTS_PER_PAGE.
+     * Modifies the resultsPerPage value.
+     * @param resultsPerPageValue The value of resultsPerPage.
      * */
-    public static void setResultsPerPage(final int resultsPerPage) {
-        RESULTS_PER_PAGE = resultsPerPage;
+    public final void setResultsPerPage(final int resultsPerPageValue) {
+        this.resultsPerPage = resultsPerPageValue;
     }
 
     /**
-     * @return The value of the constant DEFAULT_LIMIT.
+     * @return The value of defaultLimit.
      * */
-    public static long getDefaultLimit() {
-        return DEFAULT_LIMIT;
+    public final long getDefaultLimit() {
+        return this.defaultLimit;
     }
 
     /**
-     * Modifies the DEFAULT_LIMIT value.
-     * @param defaultLimit The value of DEFAULT_LIMIT.
+     * Modifies the defaultLimit value.
+     * @param defaultLimitValue The value of defaultLimit.
      * */
-    public static void setDefaultLimit(final long defaultLimit) {
-        DEFAULT_LIMIT = defaultLimit;
+    public final void setDefaultLimit(final long defaultLimitValue) {
+        this.defaultLimit = defaultLimitValue;
     }
 
     /**
      * @return The path to the cache directory.
      * */
-    public static String getJellaCacheDir() {
-        return JELLA_CACHE_DIR;
+    public final String getJellaCacheDir() {
+        return this.jellaCacheDir;
     }
 
     /**
      * Modifies the path of the cache directory.
-     * @param jellaCacheDir The path of the cache directory.
+     * @param jellaCacheDirValue The path of the cache directory.
      * */
-    public static void setJellaCacheDir(final String jellaCacheDir) {
-        JELLA_CACHE_DIR = jellaCacheDir;
+    public final void setJellaCacheDir(final String jellaCacheDirValue) {
+        this.jellaCacheDir = jellaCacheDirValue;
     }
 
     /**
-     * @return The name of the constant DEFAULT_COLLECTION.
+     * @return The name of defaultCollection.
      * */
-    public static String getDefaultCollection() {
-        return DEFAULT_COLLECTION;
+    public final String getDefaultCollection() {
+        return this.defaultCollection;
     }
 
     /**
-     * Modifies the DEFAULT_COLLECTION name.
-     * @param defaultCollection The name of DEFAULT_COLLECTION.
+     * Modifies the defaultCollection name.
+     * @param defaultCollectionValue The name of defaultCollection.
      * */
-    public static void setDefaultCollection(final String defaultCollection) {
-        DEFAULT_COLLECTION = defaultCollection;
+    public final void setDefaultCollection(
+            final String defaultCollectionValue) {
+        this.defaultCollection = defaultCollectionValue;
     }
 
     /**
-     * @return The value of the constant DEFAULT_TAG_LIMIT.
+     * @return The value of the defaultTagLimit.
      * */
-    public static int getDefaultTagLimit() {
-        return DEFAULT_TAG_LIMIT;
+    public final int getDefaultTagLimit() {
+        return this.defaultTagLimit;
     }
 
     /**
-     * Modifies the DEFAULT_TAG_LIMIT value.
-     * @param defaultTagLimit The value of DEFAULT_TAG_LIMIT.
+     * Modifies the defaultTagLimit value.
+     * @param defaultTagLimitValue The value of defaultTagLimit.
      * */
-    public static void setDefaultTagLimit(final int defaultTagLimit) {
-        DEFAULT_TAG_LIMIT = defaultTagLimit;
+    public final void setDefaultTagLimit(final int defaultTagLimitValue) {
+        this.defaultTagLimit = defaultTagLimitValue;
     }
 
     /**
-     * @return The value of the constant DEFAULT_TAG_TYPE.
+     * @return The value of defaultTagType.
      * */
-    public static String getDefaultTagType() {
-        return DEFAULT_TAG_TYPE;
+    public final String getDefaultTagType() {
+        return this.defaultTagType;
     }
 
     /**
-     * Modifies the DEFAULT_TAG_TYPE value.
-     * @param defaultTagType The value of DEFAULT_TAG_TYPE.
+     * Modifies the defaultTagType value.
+     * @param defaultTagTypeValue The value of defaultTagType.
      * */
-    public static void setDefaultTagType(final String defaultTagType) {
-        DEFAULT_TAG_TYPE = defaultTagType;
+    public final void setDefaultTagType(final String defaultTagTypeValue) {
+        this.defaultTagType = defaultTagTypeValue;
     }
 
     /**
-     * @return The value of the constant DEFAULT_TAG_WEIGHT.
+     * @return The value of defaultTagWeight.
      * */
-    public static double getDefaultTagWeight() {
-        return DEFAULT_TAG_WEIGHT;
+    public final double getDefaultTagWeight() {
+        return this.defaultTagWeight;
     }
 
     /**
-     * Modifies the DEFAULT_TAG_WEIGHT value.
-     * @param defaultTagWeight The value of DEFAULT_TAG_WEIGHT.
+     * Modifies the defaultTagWeight value.
+     * @param defaultTagWeightValue The value of defaultTagWeight.
      * */
-    public static void setDefaultTagWeight(final double defaultTagWeight) {
-        DEFAULT_TAG_WEIGHT = defaultTagWeight;
+    public final void setDefaultTagWeight(final double defaultTagWeightValue) {
+        this.defaultTagWeight = defaultTagWeightValue;
     }
 
     /**
-     * @return The value of the constant CACHE_ENABLE.
+     * @return The value of cacheEnable.
      * */
-    public static boolean isCacheEnable() {
-        return CACHE_ENABLE;
+    public final boolean isCacheEnable() {
+        return this.cacheEnable;
     }
 
     /**
-     * Modifies the CACHE_ENABLE value.
-     * @param cacheEnable The value of CACHE_ENABLE.
+     * Modifies the cacheEnable value.
+     * @param cacheEnableValue The value of cacheEnable.
      * */
-    public static void setCacheEnablet(final boolean cacheEnable) {
-        CACHE_ENABLE = cacheEnable;
+    public final void setCacheEnablet(final boolean cacheEnableValue) {
+        this.cacheEnable = cacheEnableValue;
     }
     /**
      * Creates a TrackSeach instance with "search" as method type.
@@ -210,7 +259,9 @@ public class Jella {
             final Double threshold,
             final String[] filter) {
         return new TrackSearch(this.ellaConnection,
-                "search", query, collection, fuzzy, threshold, filter);
+                "search", query, collection, fuzzy, threshold, filter,
+                this.resultsPerPage, this.getJellaCacheDir(),
+                this.cacheEnable);
     }
 
     /**
@@ -227,7 +278,9 @@ public class Jella {
             final boolean fuzzy,
             final Double threshold) {
         return new TrackSearch(this.ellaConnection, query,
-                collection, fuzzy, threshold);
+                collection, fuzzy, threshold,
+                this.resultsPerPage, this.getJellaCacheDir(),
+                this.cacheEnable);
     }
 
     /**
@@ -243,7 +296,9 @@ public class Jella {
             final boolean fuzzy,
             final Double threshold) {
         return new ArtistSearch(this.ellaConnection, "search", query,
-                collection, fuzzy, threshold);
+                collection, fuzzy, threshold,
+                this.resultsPerPage, this.getJellaCacheDir(),
+                this.cacheEnable);
     }
 
     /**
@@ -257,6 +312,8 @@ public class Jella {
             final String collection,
             final boolean fuzzy) {
         return new TagSearch(this.ellaConnection, "search", query,
-                collection, fuzzy);
+                collection, fuzzy,
+                this.resultsPerPage, this.getJellaCacheDir(),
+                this.cacheEnable);
     }
 }

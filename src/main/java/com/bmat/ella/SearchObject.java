@@ -40,9 +40,25 @@ public class SearchObject {
      * @param ellaConnection A connection to the Ella web service.
      * @param collectionValue The collection name of the album.
      * */
+//    public SearchObject(final EllaConnection ellaConnection,
+//            final String collectionValue) {
+//        this(ellaConnection, collectionValue, Jella.JELLA_CACHE_DIR,
+//                Jella.CACHE_ENABLE);
+//    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param collectionValue The collection name of the album.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
     public SearchObject(final EllaConnection ellaConnection,
-            final String collectionValue) {
-        this.request = new Request(ellaConnection);
+            final String collectionValue,
+            final String jellaCacheDir,
+            final boolean cacheEnable) {
+        this.request = new Request(ellaConnection, jellaCacheDir, cacheEnable);
         this.collection = collectionValue;
     }
 

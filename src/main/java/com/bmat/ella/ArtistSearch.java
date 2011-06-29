@@ -22,12 +22,38 @@ public class ArtistSearch extends Search {
      * @param fuzzy A Boolean value that indicates if it is a fuzzy search.
      * @param threshold The lowest Track score to consider. In case of null,
      * it will be considered as 0.
-     * */
+     */
     public ArtistSearch(final EllaConnection ellaConnection,
             final String method, final String query,
             final String collection, final boolean fuzzy,
             final Double threshold) {
-        super(ellaConnection, collection);
+        this(ellaConnection, method, query, collection, fuzzy, threshold,
+                Jella.RESULTS_PER_PAGE, Jella.JELLA_CACHE_DIR,
+                Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param method A String that contains the name of the type of search
+     * (search, resolve, match).
+     * @param query A string that contains the value of the query.
+     * @param collection The name of the queried collection.
+     * @param fuzzy A Boolean value that indicates if it is a fuzzy search.
+     * @param threshold The lowest Track score to consider. In case of null,
+     * it will be considered as 0.
+     * @param resultsPerPage The value of resultsPerPage.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public ArtistSearch(final EllaConnection ellaConnection,
+            final String method, final String query,
+            final String collection, final boolean fuzzy,
+            final Double threshold, final int resultsPerPage,
+            final String jellaCacheDir, final boolean cacheEnable) {
+        super(ellaConnection, collection, resultsPerPage,
+                jellaCacheDir, cacheEnable);
         this.fuzzy = fuzzy;
         if (threshold != null) {
             this.threshold = threshold;

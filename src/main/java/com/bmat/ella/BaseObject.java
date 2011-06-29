@@ -42,7 +42,24 @@ public abstract class BaseObject extends SearchObject {
      * */
     public BaseObject(final EllaConnection ellaConnection,
             final String idValue, final String collection) {
-        super(ellaConnection, collection);
+        this(ellaConnection, idValue, collection, Jella.JELLA_CACHE_DIR,
+                Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param idValue The id of the song.
+     * @param collection The collection name of the album.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public BaseObject(final EllaConnection ellaConnection,
+            final String idValue, final String collection,
+            final String jellaCacheDir,
+            final boolean cacheEnable) {
+        super(ellaConnection, collection, jellaCacheDir, cacheEnable);
         this.id = idValue;
     }
 

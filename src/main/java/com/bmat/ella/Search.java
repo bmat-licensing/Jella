@@ -35,6 +35,10 @@ public abstract class Search extends SearchObject {
      * The total number of results.
      * */
     private Long hits;
+    /**
+     * Total number of results per page.
+     * */
+    private int resultsPerPage;
 
     /**
      * Class constructor.
@@ -43,9 +47,28 @@ public abstract class Search extends SearchObject {
      * */
     public Search(final EllaConnection ellaConnection,
             final String collection) {
-        super(ellaConnection, collection);
+        this(ellaConnection, collection, Jella.RESULTS_PER_PAGE,
+                Jella.JELLA_CACHE_DIR, Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param collection The collection name.
+     * @param resultsPerPageValue The value of resultsPerPage.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnabled A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public Search(final EllaConnection ellaConnection,
+            final String collection,
+            final int resultsPerPageValue,
+            final String jellaCacheDir,
+            final boolean cacheEnabled) {
+        super(ellaConnection, collection, jellaCacheDir, cacheEnabled);
         this.lastPageIndex = -1;
         this.hits = null;
+        this.resultsPerPage = resultsPerPageValue;
     }
 
     /**
@@ -83,7 +106,7 @@ public abstract class Search extends SearchObject {
         if (this.method.indexOf("resolve") == -1) {
             long offset = 0;
             if (pageIndex != 0) {
-                offset = Jella.getResultsPerPage() * pageIndex;
+                offset = this.resultsPerPage * pageIndex;
             }
             params.put("offset", Long.toString(offset));
         }
@@ -154,5 +177,20 @@ public abstract class Search extends SearchObject {
             params.put(key, this.searchTerms.get(key).toString());
         }
         return params;
+    }
+
+    /**
+     * @return The value of resultsPerPage.
+     * */
+    public final int getResultsPerPage() {
+        return this.resultsPerPage;
+    }
+
+    /**
+     * Modifies the resultsPerPage value.
+     * @param resultsPerPageValue The value of resultsPerPage.
+     * */
+    public final void setResultsPerPage(final int resultsPerPageValue) {
+        this.resultsPerPage = resultsPerPageValue;
     }
 }

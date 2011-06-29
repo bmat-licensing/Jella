@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
  * @author Harrington Joseph (Harph)
  * */
 public class TagSearch extends Search {
+
     /**
      * Class constructor.
      * @param ellaConnection A connection to the Ella web service.
@@ -25,7 +26,31 @@ public class TagSearch extends Search {
     public TagSearch(final EllaConnection ellaConnection,
             final String method, final String query,
             final String collection, final boolean fuzzy) {
-        super(ellaConnection, collection);
+        this(ellaConnection, method, query, collection, fuzzy,
+                Jella.RESULTS_PER_PAGE, Jella.JELLA_CACHE_DIR,
+                Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param method A String that contains the name of the type of search
+     * (search, match).
+     * @param query A string that contains the value of the query.
+     * @param collection The name of the queried collection.
+     * @param fuzzy A Boolean value that indicates if is was a fuzzy search.
+     * @param resultsPerPage The value of resultsPerPage.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * enabled or not.
+     * */
+    public TagSearch(final EllaConnection ellaConnection,
+            final String method, final String query,
+            final String collection, final boolean fuzzy,
+            final int resultsPerPage,
+            final String jellaCacheDir, final boolean cacheEnable) {
+        super(ellaConnection, collection, resultsPerPage,
+                jellaCacheDir, cacheEnable);
         this.fuzzy = fuzzy;
         this.searchTerms = new HashMap<String, String>();
         this.metadata = "_all";

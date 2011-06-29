@@ -54,6 +54,10 @@ public class Track extends BaseObject implements Comparable<Track> {
      * Track popularity.
      * */
     private Double popularity;
+    /**
+     * Default max number of results.
+     * */
+    private long defaultLimit;
 
     /**
      * Class constructor.
@@ -63,7 +67,25 @@ public class Track extends BaseObject implements Comparable<Track> {
      * */
     public Track(final EllaConnection ellaConnection, final String id,
             final String collection) {
-        super(ellaConnection, id, collection);
+        this(ellaConnection, id, collection, Jella.DEFAULT_LIMIT,
+                Jella.JELLA_CACHE_DIR, Jella.CACHE_ENABLE);
+    }
+
+    /**
+     * Class constructor.
+     * @param ellaConnection A connection to the Ella web service.
+     * @param id The id of the song.
+     * @param collection The collection name of the album.
+     * @param defaultLimitValue max number of results.
+     * @param jellaCacheDir The path to the cache directory.
+     * @param cacheEnable A boolean that says if the cache is
+     * */
+    public Track(final EllaConnection ellaConnection, final String id,
+            final String collection,
+            final long defaultLimitValue,
+            final String jellaCacheDir,
+            final boolean cacheEnable) {
+        super(ellaConnection, id, collection, jellaCacheDir, cacheEnable);
         this.method = "/tracks/" + this.id + SearchObject.RESPONSE_TYPE;
         this.metadataLinks = new String[]{"spotify_track_url",
                 "grooveshark_track_url", "amazon_track_url",
@@ -74,6 +96,7 @@ public class Track extends BaseObject implements Comparable<Track> {
             + "track_popularity,track_small_image,recommendable,"
             + "spotify_track_uri,";
         this.metadata += Util.joinArray(this.metadataLinks, ",");
+        this.defaultLimit = defaultLimitValue;
     }
 
     /**
@@ -318,7 +341,7 @@ public class Track extends BaseObject implements Comparable<Track> {
      * */
     public final ArrayList<Track> getSimilarTracks()
     throws ServiceException, IOException {
-        return this.getSimilarTracks(Jella.getDefaultLimit(),
+        return this.getSimilarTracks(this.defaultLimit,
                 null, null, null, null, null);
     }
 
@@ -405,5 +428,20 @@ public class Track extends BaseObject implements Comparable<Track> {
      * */
     public final int hashCode() {
         return this.id.hashCode();
+    }
+
+    /**
+     * @return The value of defaultLimit.
+     * */
+    public final long getDefaultLimit() {
+        return this.defaultLimit;
+    }
+
+    /**
+     * Modifies the defaultLimit value.
+     * @param defaultLimitValue The value of defaultLimit.
+     * */
+    public final void setDefaultLimit(final long defaultLimitValue) {
+        this.defaultLimit = defaultLimitValue;
     }
 }
